@@ -38,63 +38,58 @@ type DeriveResult struct {
 	PrivKey    string `yaml:"private_key"`
 }
 
-func RecoverKeys(paramsPath string, outputPath string) error {
+type parsedParams struct {
+	UserPrivKeyScalar *big.Int
+	UserChainCode     []byte
+	UserPubKey        string
+	EciesPrivKey      *ecies.PrivateKey
+	RsaPrivKey        *rsa.PrivateKey
+}
+
+func RecoverKeysCmd(paramsPath string, outputPath string) error {
 	params := loadRecoveryParams(paramsPath)
 
-	userPrivKey, userChainCode, err := common.CalcMasterPriv(params.UserMnemonic)
+	result, err := RecoverKeys(params)
 	if err != nil {
-		common.Logger.Errorf("calc user priv infos failed: %s", err)
-		return err
-	}
-	usrPrivKeyScalar := new(big.Int).SetBytes(userPrivKey[:])
-	userPubKey := calcUserPubKey(usrPrivKeyScalar)
-	common.Logger.Debugf("user pubkey: %s", userPubKey)
-
-	eciesPrivKey, err := ecies.NewPrivateKeyFromHex(params.EciesPrivKey)
-	common.Logger.Debugf("ecies privkey: %d", eciesPrivKey.D)
-	if err != nil {
-		common.Logger.Errorf("load ecies privkey failed: %s", err)
-		return err
-	}
-	rsaPrivKey, err := crypto.ParseRsaPrivKey(params.RsaPrivKey)
-	common.Logger.Debugf("rsa privkey: %d, %d", rsaPrivKey.Primes[0], rsaPrivKey.Primes[1])
-	if err != nil {
-		common.Logger.Errorf("parse rsa privkey failed: %s", err)
+		common.Logger.Errorf("derive keys failed")
 		return err
 	}
 
-	hbcPrivs, err := findHbcPrivs(params.ZipPath, userPubKey, eciesPrivKey, rsaPrivKey)
+	if err := saveResult(&result, outputPath); err != nil {
+		common.Logger.Errorf("save result failed")
+		return err
+	}
+	return nil
+}
+
+func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
+	parsed, err := parseParams(params)
+	if err != nil {
+		return nil, err
+	}
+
+	hbcPrivs, err := findHbcPrivs(params.ZipPath, parsed.UserPubKey, parsed.EciesPrivKey, parsed.RsaPrivKey)
 	if err != nil {
 		common.Logger.Errorf("find hbc private info failed: %s", err)
-		return err
+		return nil, err
 	}
 
 	privs := &common.RootKeys{
 		HbcShare0: hbcPrivs[0],
 		HbcShare1: hbcPrivs[1],
 		UsrShare: &common.RootKey{
-			PrivKey:   usrPrivKeyScalar,
-			PubKey:    crypto.ScalarBaseMult(btcec.S256(), usrPrivKeyScalar),
-			ChainCode: userChainCode[:],
+			PrivKey:   parsed.UserPrivKeyScalar,
+			PubKey:    crypto.ScalarBaseMult(btcec.S256(), parsed.UserPrivKeyScalar),
+			ChainCode: parsed.UserChainCode[:],
 		},
 	}
-	childs, err := deriveChilds(params.VaultCount, params.CoinType, privs)
+
+	keys, err := deriveChilds(params.VaultCount, params.CoinType, privs)
 	if err != nil {
 		common.Logger.Errorf("derive childs failed: %s", err)
-		return err
+		return nil, err
 	}
-
-	yamlData, err := yaml.Marshal(&childs)
-	if err != nil {
-		common.Logger.Errorf("yaml marshal result failed: %s", err)
-		return err
-	}
-	err = ioutil.WriteFile(outputPath, yamlData, 0644)
-	if err != nil {
-		panic("Unable to write data into the file")
-	}
-
-	return nil
+	return keys, nil
 }
 
 func loadRecoveryParams(path string) RecoveryInput {
@@ -110,6 +105,53 @@ func loadRecoveryParams(path string) RecoveryInput {
 		panic(err)
 	}
 	return params
+}
+
+func parseParams(params RecoveryInput) (*parsedParams, error) {
+	userPrivKey, userChainCode, err := common.CalcMasterPriv(params.UserMnemonic)
+	if err != nil {
+		common.Logger.Errorf("calc user priv infos failed: %s", err)
+		return nil, err
+	}
+	usrPrivKeyScalar := new(big.Int).SetBytes(userPrivKey[:])
+	userPubKey := calcUserPubKey(usrPrivKeyScalar)
+	common.Logger.Debugf("user pubkey: %s", userPubKey)
+
+	eciesPrivKey, err := ecies.NewPrivateKeyFromHex(params.EciesPrivKey)
+	common.Logger.Debugf("ecies privkey: %d", eciesPrivKey.D)
+	if err != nil {
+		common.Logger.Errorf("load ecies privkey failed: %s", err)
+		return nil, err
+	}
+
+	rsaPrivKey, err := crypto.ParseRsaPrivKey(params.RsaPrivKey)
+	common.Logger.Debugf("rsa privkey: %d, %d", rsaPrivKey.Primes[0], rsaPrivKey.Primes[1])
+	if err != nil {
+		common.Logger.Errorf("parse rsa privkey failed: %s", err)
+		return nil, err
+	}
+
+	return &parsedParams{
+		UserPrivKeyScalar: usrPrivKeyScalar,
+		UserChainCode:     userChainCode[:],
+		UserPubKey:        userPubKey,
+		EciesPrivKey:      eciesPrivKey,
+		RsaPrivKey:        rsaPrivKey,
+	}, nil
+}
+
+func saveResult(childs *[]*DeriveResult, outputPath string) error {
+	yamlData, err := yaml.Marshal(childs)
+	if err != nil {
+		common.Logger.Errorf("yaml marshal result failed: %s", err)
+		return err
+	}
+	err = ioutil.WriteFile(outputPath, yamlData, 0644)
+	if err != nil {
+		common.Logger.Errorf("unable to write data into the file")
+		return err
+	}
+	return nil
 }
 
 func calcUserPubKey(privKey *big.Int) string {

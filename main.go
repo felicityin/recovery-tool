@@ -12,7 +12,7 @@ func main() {
 	flag.StringVar(&inputPath, "i", "./input.yaml", "the path of input parmas")
 	flag.StringVar(&outputPath, "o", "./output.yaml", "the path of result")
 
-	err := cmd.RecoverKeys(inputPath, outputPath)
+	err := cmd.RecoverKeysCmd(inputPath, outputPath)
 	if err != nil {
 		common.Logger.Errorf("%s", err)
 	}
