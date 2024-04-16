@@ -13,39 +13,6 @@ import (
 	"recovery-tool/crypto/ckd"
 )
 
-// zero is deafult of uint32
-const (
-	Zero      uint32 = 0
-	ZeroQuote uint32 = 0x80000000
-	BTCToken  uint32 = 0x10000000
-	ETHToken  uint32 = 0x20000000
-)
-
-// wallet type from bip44
-const (
-	// https://github.com/satoshilabs/slips/blob/master/slip-0044.md#registered-coin-types
-	BTC       = Zero + 0
-	LTC       = Zero + 2
-	DOGE      = Zero + 3
-	DASH      = Zero + 5
-	Optimism  = Zero + 10
-	ETH       = Zero + 60
-	BCH       = Zero + 145
-	TRX       = Zero + 195
-	BSV       = Zero + 236
-	Fantom    = Zero + 250
-	ZKSYNC    = Zero + 324
-	POLYGON   = Zero + 966
-	ARBITRUM  = Zero + 9001
-	OKChain   = Zero + 996
-	BSC       = Zero + 714
-	HECO      = Zero + 553
-	Avalanche = Zero + 43114
-	Apt       = Zero + 637
-	SUI       = Zero + 784
-	SOL       = Zero + 501
-)
-
 type RecoveryData struct {
 	HbcPrivKeys   []string
 	HbcChainCodes []string

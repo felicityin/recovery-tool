@@ -28,7 +28,7 @@ type RecoveryInput struct {
 	EciesPrivKey string `yaml:"ecies_private_key"`
 	RsaPrivKey   string `yaml:"coincover_private_key"`
 	VaultCount   int    `yaml:"valut_count"`
-	CoinType     int    `yaml:"coin_type"`
+	CoinType     []int  `yaml:"coin_type"`
 }
 
 type DeriveResult struct {
@@ -151,7 +151,7 @@ func findHbcPrivs(
 			return nil, fmt.Errorf("unmarshal team failed: %s", err.Error())
 		}
 
-		decryptedUsrPubKey, err := decryptUsrPubKey(encrypted.UserPubKey, eciesPrivKey, rsaPrivKey)
+		decryptedUsrPubKey, err := decryptUserPubKey(encrypted.UserPubKey, eciesPrivKey, rsaPrivKey)
 		common.Logger.Debugf("decrypted user pubkey: %s", decryptedUsrPubKey)
 		if err != nil {
 			return nil, err
@@ -175,7 +175,7 @@ func findHbcPrivs(
 	return nil, fmt.Errorf("mnemonic and zip do not match")
 }
 
-func decryptUsrPubKey(userPubKey string, eciesPrivKey *ecies.PrivateKey, rsaPrivKey *rsa.PrivateKey) (string, error) {
+func decryptUserPubKey(userPubKey string, eciesPrivKey *ecies.PrivateKey, rsaPrivKey *rsa.PrivateKey) (string, error) {
 	userPubKeyBytes, err := hex.DecodeString(userPubKey)
 	if err != nil {
 		return "", fmt.Errorf("hex decode user pubkey error: %s", err.Error())
@@ -235,25 +235,27 @@ func decryptHbcPriv(
 	}, nil
 }
 
-func deriveChilds(vaultCount int, coinType int, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
+func deriveChilds(vaultCount int, coinType []int, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
 	var deriveResult []*DeriveResult
 
 	for vaultIndex := 0; vaultIndex < vaultCount; vaultIndex++ {
-		hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coinType) // Only support asset wallet for now
-		privKey, address, err := common.DeriveChild(rootKeys, hdPath)
-		if err != nil {
-			return nil, fmt.Errorf("derive child failed, err: %s", err.Error())
+		for _, coin := range coinType {
+			hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coin) // Only support asset wallet for now
+			privKey, address, err := common.DeriveChild(rootKeys, hdPath)
+			if err != nil {
+				return nil, fmt.Errorf("derive child failed, err: %s", err.Error())
+			}
+
+			var buf [32]byte
+			privKeyBytes := privKey.FillBytes(buf[:])
+
+			deriveResult = append(deriveResult, &DeriveResult{
+				VaultIndex: vaultIndex,
+				CoinType:   common.SwitchChain(uint32(coin)),
+				Address:    address,
+				PrivKey:    hex.EncodeToString(privKeyBytes),
+			})
 		}
-
-		var buf [32]byte
-		privKeyBytes := privKey.FillBytes(buf[:])
-
-		deriveResult = append(deriveResult, &DeriveResult{
-			VaultIndex: vaultIndex,
-			CoinType:   common.SwitchChain(uint32(coinType)),
-			Address:    address,
-			PrivKey:    hex.EncodeToString(privKeyBytes),
-		})
 	}
 
 	return deriveResult, nil

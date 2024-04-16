@@ -1,6 +1,18 @@
 zip_path: ./test/134_archive.zip
 valut_count: 1
-coin_type: 60
+# Supported coin type:
+# https://github.com/satoshilabs/slips/blob/master/slip-0044.md#registered-coin-types
+# BTC      = 0
+# LTC      = 2
+# DOGE     = 3
+# ETH      = 60
+# BCH      = 145
+# TRX      = 195
+# HECO     = 553
+# BSC      = 714
+# POLYGON  = 966
+# ARBITRUM = 9001
+coin_type: [0, 60]
 user_mnemonic: amused garlic window please enrich sick gate ready owner giraffe elite umbrella hair seat punch seminar notable enroll wet asset outdoor inflict rich mushroom
 ecies_private_key: ea5db436b7508e5c8ec3ae17003bcb997c30e03c655f0dd2d1824ec93bd0501c
 coincover_private_key: |
