@@ -29,15 +29,26 @@ require (
 	github.com/ecies/go/v2 v2.0.9
 	github.com/ethereum/go-ethereum v1.13.5
 	github.com/fbsobreira/gotron-sdk v0.0.0-20230907131216-1e824406fe8c
+	github.com/stretchr/testify v1.8.4
 )
 
 require (
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dchest/blake256 v1.1.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
 	github.com/drand/kyber v1.1.4 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/holiman/uint256 v1.2.3 // indirect
+	github.com/ipfs/go-log v1.0.5 // indirect
+	github.com/ipfs/go-log/v2 v2.1.3 // indirect
+	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/phoreproject/bls v0.0.0-20200525203911-a88a5ae26844 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/shengdoushi/base58 v1.0.0 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
+	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

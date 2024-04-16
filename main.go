@@ -15,10 +15,10 @@ const (
 func main() {
 	recoverCmd := flag.NewFlagSet(taskRecover, flag.ExitOnError)
 	recoveryParamsPath := recoverCmd.String("i", "./recovery.yaml", "the path of input parmas")
-	recoveryOutputPath := recoverCmd.String("o", "./recovery_output.yaml", "the path of input parmas")
+	recoveryOutputPath := recoverCmd.String("o", "./recovery_output.yaml", "the path of result")
 
 	if len(os.Args) < 2 {
-		fmt.Printf("expected '%s' subcommand\n", taskRecover)
+		fmt.Printf("expect '%s' subcommand\n", taskRecover)
 		os.Exit(1)
 	}
 
@@ -28,8 +28,9 @@ func main() {
 		if err != nil {
 			common.Logger.Errorf("%s", err)
 		}
+		fmt.Printf("Output the result to file `%s`\n", *recoveryOutputPath)
 	default:
-		fmt.Printf("expected '%s' subcommand\n", taskRecover)
+		fmt.Printf("expect '%s' subcommand\n", taskRecover)
 		os.Exit(1)
 	}
 }

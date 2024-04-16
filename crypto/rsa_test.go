@@ -1,0 +1,93 @@
+package crypto
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestRsa(t *testing.T) {
+	privkey := `-----BEGIN PRIVATE KEY-----
+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
+BkQYx9xJrcWT4gl+bVuezBX+nbcOyQ==
+-----END PRIVATE KEY-----`
+
+	pubkey := `-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtA33mi+SL+/gaFfUANbH
+wmymUo4TUVP1d8PPzSuPB7LwN4DTZ+aA+C+pcUyToJ5TbKlxm3M5R04ncktbvISk
+rQ2DV3IFB457qjCPae4meH7vOXscJO6qpO4+9rtSbw6a6NOj/1Cn4PVa/lrYhfxH
+cb0MYNrmmHSF3wqXT1k9QQ0ozVNNgekiH2b1m8cYPjGESk6aSydChUh7LrQ9XAjl
+jPRJJbgtTXuZvHe92rEeGhymrwPoK1ipct6iWciLfZcmxjRZKFKRLwEhmcQCSSnL
+pG6+ix4w5C4/zaSOnyuEZvQhfSqV6f52uXvfjmeM5ordtqMpXwT3h4SAonT5FDP4
+oWztIwEzvnQ04jHBSILzlEsF53zWrR3r7P2P8RsT+EdhgEL08ZZsODtCm9svmjP9
+BGQXfcdACRtCq1uEve/YqQc11QV33yaY4YfaNB8kRgRtZA2yXwGiFJx+FSX0/oga
+Kqo7XQ1RiwHsjCGoZVTJCa/f0Zhv64lrpHYBjLnipOUTIH4RP62bhG2MI8wcRf5d
+0Y1kRdRL3FOAu4JzybP/5K6KYW8YmxXnk3XzW8OysUSVjeWuD4eY0hsYgU/kvz6Z
+Au2bQBdj6iYMBbmhWh70Ty39K7hC0oI8C/iooNhtOifc79c3YRJ2etcm31XjWsww
+iqqLN5mqiSEEGtLr9lsjl3cCAwEAAQ==
+-----END PUBLIC KEY-----`
+
+	rsaPrivkey, err := ParseRsaPrivKey(privkey)
+	assert.NoError(t, err)
+
+	rsaPubkey, err := ParseRsaPubKey(pubkey)
+	assert.NoError(t, err)
+
+	assert.Equal(t, rsaPrivkey.PublicKey.N, rsaPubkey.N)
+
+	encrypted, err := RsaEncryptOAEP(rsaPubkey, []byte("hello"))
+	assert.NoError(t, err)
+
+	decrypted, err := RsaDecryptOAEP(rsaPrivkey, encrypted)
+	assert.NoError(t, err)
+
+	assert.Equal(t, decrypted, []byte("hello"))
+}

@@ -9,8 +9,8 @@ import (
 	"errors"
 )
 
-func ParseRsaPrivKey(priKey string) (*rsa.PrivateKey, error) {
-	block, _ := pem.Decode([]byte(priKey))
+func ParseRsaPrivKey(privKey string) (*rsa.PrivateKey, error) {
+	block, _ := pem.Decode([]byte(privKey))
 	if block == nil {
 		return nil, errors.New("private key error")
 	}
@@ -21,6 +21,22 @@ func ParseRsaPrivKey(priKey string) (*rsa.PrivateKey, error) {
 	return privateKey.(*rsa.PrivateKey), nil
 }
 
+func ParseRsaPubKey(pubKey string) (*rsa.PublicKey, error) {
+	block, _ := pem.Decode([]byte(pubKey))
+	if block == nil {
+		return nil, errors.New("public key error")
+	}
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		pub, err = x509.ParsePKCS1PublicKey(block.Bytes)
+		if err != nil {
+			return nil, err
+		}
+	}
+	rsaPub := pub.(*rsa.PublicKey)
+	return rsaPub, nil
+}
+
 func RsaEncryptOAEP(pubKey *rsa.PublicKey, data []byte) ([]byte, error) {
 	encryptedBytes, err := rsa.EncryptOAEP(sha256.New(), rand.Reader, pubKey, data, []byte("HBC_MPC"))
 	if err != nil {
@@ -29,7 +45,7 @@ func RsaEncryptOAEP(pubKey *rsa.PublicKey, data []byte) ([]byte, error) {
 	return encryptedBytes, nil
 }
 
-func RSADecryptOAEP(privKey *rsa.PrivateKey, encryptedBytes []byte) ([]byte, error) {
+func RsaDecryptOAEP(privKey *rsa.PrivateKey, encryptedBytes []byte) ([]byte, error) {
 	plainBytes, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, privKey, encryptedBytes, []byte("HBC_MPC"))
 	if err != nil {
 		return nil, err

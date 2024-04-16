@@ -6,7 +6,6 @@ import (
 )
 
 func CalcMasterPriv(menemonic string) (privKey, chainCode [32]byte, err error) {
-	fmt.Println(menemonic)
 	seed, err := hdwallet.NewSeed(menemonic, "", hdwallet.English)
 	if err != nil {
 		return privKey, chainCode, fmt.Errorf("create seed err: %s", err.Error())
