@@ -55,7 +55,7 @@ func RecoverKeysCmd(paramsPath string, outputPath string) error {
 		return err
 	}
 
-	if err := saveResult(&result, outputPath); err != nil {
+	if err := SaveResult(&result, outputPath); err != nil {
 		common.Logger.Errorf("save result failed")
 		return err
 	}
@@ -140,7 +140,7 @@ func parseParams(params RecoveryInput) (*parsedParams, error) {
 	}, nil
 }
 
-func saveResult(childs *[]*DeriveResult, outputPath string) error {
+func SaveResult(childs *[]*DeriveResult, outputPath string) error {
 	yamlData, err := yaml.Marshal(childs)
 	if err != nil {
 		common.Logger.Errorf("yaml marshal result failed: %s", err)
