@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"math/big"
+	"recovery-tool/common/code"
 
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/decred/dcrd/dcrec/edwards/v2"
@@ -35,12 +36,12 @@ type RootKey struct {
 func DeriveChild(params *RootKeys, hdPath string, coin int) (*big.Int, string, error) {
 	privKey, err := DerivePrivKey(params, hdPath, coin)
 	if err != nil {
-		return nil, "", err
+		return nil, "", code.NewI18nError(code.DeriveChildPrivErr, err.Error())
 	}
 
 	address, err := DeriveAddress(privKey, hdPath, coin)
 	if err != nil {
-		return nil, "", err
+		return nil, "", code.NewI18nError(code.DeriveChildAddressErr, err.Error())
 	}
 
 	return privKey, address, nil
@@ -108,8 +109,8 @@ func SwitchCoin(coinType uint32) string {
 		chain = "eth"
 	case BCH:
 		chain = "bch"
-	case DASH:
-		chain = "dash"
+	//case DASH:
+	//	chain = "dash"
 	case TRX:
 		chain = "trx"
 	case HECO:
@@ -117,14 +118,14 @@ func SwitchCoin(coinType uint32) string {
 	case BSC:
 		chain = "eth"
 	case POLYGON:
-		chain = "eth_arbitrum"
+		chain = "eth"
 	case ARBITRUM:
-		chain = "matic_polygon"
-	case Apt:
-		chain = "apt"
+		chain = "eth"
 	case SOL:
 		chain = "sol"
-	case DOT:
+	case Apt:
+		chain = "apt"
+	case Dot:
 		chain = "dot"
 	default:
 		panic("invalid chain type")
