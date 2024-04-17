@@ -24,6 +24,10 @@ var (
 	TESTNETParams = chaincfg.TestNet3Params
 )
 
+func init() {
+	InitParams()
+}
+
 func InitParams() {
 	//fmt.Printf("initParams, initial DOGEParams.ScriptHashAddrID %d \n", DOGEParams.ScriptHashAddrID)
 	// ltc net params
