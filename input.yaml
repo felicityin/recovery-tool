@@ -12,7 +12,7 @@ valut_count: 1
 # BSC      = 714
 # POLYGON  = 966
 # ARBITRUM = 9001
-coin_type: [0, 60]
+coin_type: [0, 2, 3, 60, 145, 195, 553, 714, 966, 9001]
 user_mnemonic: amused garlic window please enrich sick gate ready owner giraffe elite umbrella hair seat punch seminar notable enroll wet asset outdoor inflict rich mushroom
 ecies_private_key: ea5db436b7508e5c8ec3ae17003bcb997c30e03c655f0dd2d1824ec93bd0501c
 coincover_private_key: |

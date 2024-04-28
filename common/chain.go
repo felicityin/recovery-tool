@@ -48,10 +48,6 @@ const (
 )
 
 func SwitchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) {
-	return switchChainAddress(ecdsaPk, chain)
-}
-
-func switchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) {
 	var addressStr string
 	switch chain {
 	case "eth":
@@ -118,7 +114,6 @@ func switchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) 
 			return "", err
 		}
 		addressStr = pkHash.EncodeAddress()
-		fmt.Printf("switchChainAddress, LTCParams.PubKeyHashAddrID %d \n", LTCParams.PubKeyHashAddrID)
 	case "doge":
 		var xFieldVal btcec.FieldVal
 		var yFieldVal btcec.FieldVal
@@ -136,7 +131,6 @@ func switchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) 
 			return "", err
 		}
 		addressStr = pkHash.EncodeAddress()
-		fmt.Printf("switchChainAddress, DOGEParams.PubKeyHashAddrID %d \n", DOGEParams.PubKeyHashAddrID)
 	case "usdt":
 		var xFieldVal btcec.FieldVal
 		var yFieldVal btcec.FieldVal
@@ -171,7 +165,6 @@ func switchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) 
 		if err != nil {
 			return "", err
 		}
-		fmt.Printf("switchChainAddress, BCHParams.PubKeyHashAddrID %d \n", BCHParams.PubKeyHashAddrID)
 	case "dash":
 		var err error
 		addressStr, err = makeBtcAddress(ecdsaPk, &DASHParams)

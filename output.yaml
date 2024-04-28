@@ -3,6 +3,38 @@
   address: 1KqwEg4wKkvMhBRwxqRpdHreJstDp4r5zS
   private_key: 27c5a0b1a19e010b8f9cd2ffc21453b041a4de6d1a8417ff17605279a0d3334b
 - vault_index: 0
+  coin_type: ltc
+  address: 1A8PRihfxsQZNWmhGgid3pxDY1S16LMATC
+  private_key: f50ebfa5d1a8c4af4023f691e6cb3ea1529ed6def495d4cee7eef90a66b0052a
+- vault_index: 0
+  coin_type: doge
+  address: 15yTNupdYDJRXxTtVeAtCXgkVFkkJtNjV6
+  private_key: afbcdeb5e5ec97abbe55dae63715451d4fa401b4e0b94ea97a008b7dc1d15555
+- vault_index: 0
   coin_type: eth
   address: 0xA209798360bAbfe34EE6426c5877D08c9301376B
   private_key: bef7e9b1b9bc51d6462f7ce207ceac3438e9768a585da166511771f43735ea81
+- vault_index: 0
+  coin_type: bch
+  address: 1HxtcmJik1rPRq3kqroidMvMFcV8BCHrGZ
+  private_key: e62eaa38669945dc6089f7e3358b8a9ee92f3d2753ded5437996389502af1f0e
+- vault_index: 0
+  coin_type: trx
+  address: TAK3K7sUbCXoZygSihq9WLYE5gH4Bb7J13
+  private_key: 1b6fa9649db36674ce6e41e3b932a76794a94800e65b37ca22a7629f31090783
+- vault_index: 0
+  coin_type: ht_heco
+  address: 0x576A7404B405362FD6c98e35D551872145a89911
+  private_key: eab2b2a8981f8005bbc48b2e123563dc758d082503803e429cbda27c3190c663
+- vault_index: 0
+  coin_type: bnb_bsc
+  address: 0x23c18D9e1C0FBf7fbb609598Ece05924Fa020871
+  private_key: baaebbbc05ae8595a38e0c1e001087482082046aa58ed0f7af5dd46b6d9af4d8
+- vault_index: 0
+  coin_type: eth_arbitrum
+  address: 0xeFcb3B60F7472305157b4DC8AdFF58C66D20D2fe
+  private_key: dc4f4f7c96cd61b336cc1c0e48e2809e543494871ee5b72e854f4e443469329c
+- vault_index: 0
+  coin_type: matic_polygon
+  address: 0xe03eBedEBCF92Db40E974b9838C4909bF3E9BEd7
+  private_key: 68cfaad889ce0cfa9d035f58b0c34872315126c6ad5d7784594410c45b2fa0d6

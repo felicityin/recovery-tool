@@ -88,7 +88,7 @@ func DeriveAddress(privKey *big.Int, hdPath string) (string, error) {
 	}
 	chainUint32 := uint32(chainInt)
 	chain := SwitchChain(chainUint32)
-	return switchChainAddress(publicKey, chain)
+	return SwitchChainAddress(publicKey, chain)
 }
 
 func SwitchChain(coinType uint32) string {
@@ -110,9 +110,9 @@ func SwitchChain(coinType uint32) string {
 	case TRX:
 		chain = "trx"
 	case HECO:
-		chain = "eth"
+		chain = "ht_heco"
 	case BSC:
-		chain = "eth"
+		chain = "bnb_bsc"
 	case POLYGON:
 		chain = "eth_arbitrum"
 	case ARBITRUM:
