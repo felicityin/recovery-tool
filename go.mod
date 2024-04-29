@@ -41,7 +41,9 @@ require (
 	github.com/holiman/uint256 v1.2.3 // indirect
 	github.com/phoreproject/bls v0.0.0-20200525203911-a88a5ae26844 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/portto/aptos-go-sdk v0.0.0-20230807103729-9a5201cad72f // indirect
 	github.com/shengdoushi/base58 v1.0.0 // indirect
+	github.com/the729/lcs v0.1.5 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

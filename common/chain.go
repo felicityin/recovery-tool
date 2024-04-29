@@ -9,9 +9,14 @@ import (
 	"github.com/HcashOrg/hcd/hcutil"
 	btcec "github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
+	"github.com/btcsuite/btcd/btcutil/base58"
 	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/decred/dcrd/dcrec/edwards/v2"
 	ecrypto "github.com/ethereum/go-ethereum/crypto"
 	addr "github.com/fbsobreira/gotron-sdk/pkg/address"
+	"github.com/portto/aptos-go-sdk/crypto"
+	"github.com/portto/aptos-go-sdk/models"
+	"golang.org/x/crypto/blake2b"
 )
 
 // zero is deafult of uint32
@@ -45,9 +50,16 @@ const (
 	Apt       = Zero + 637
 	SUI       = Zero + 784
 	SOL       = Zero + 501
+	DOT       = Zero + 354
 )
 
-func SwitchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) {
+var ss58Prefix = []byte("SS58PRE")
+var DOTNetWorkByteMap = map[string]byte{
+	"DOT": 0x00,
+	"KSM": 0x00,
+}
+
+func SwitchEcdsaChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) {
 	var addressStr string
 	switch chain {
 	case "eth":
@@ -171,21 +183,18 @@ func SwitchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) 
 		if err != nil {
 			return "", err
 		}
-		fmt.Printf("switchChainAddress, DASHParams.PubKeyHashAddrID %d \n", DASHParams.PubKeyHashAddrID)
 	case "dcr":
 		var err error
 		addressStr, err = makeBtcAddress(ecdsaPk, &DCRParams)
 		if err != nil {
 			return "", err
 		}
-		fmt.Printf("switchChainAddress, DCRParams.PubKeyHashAddrID %d \n", DCRParams.PubKeyHashAddrID)
 	case "rvn":
 		var err error
 		addressStr, err = makeBtcAddress(ecdsaPk, &RVNParams)
 		if err != nil {
 			return "", err
 		}
-		fmt.Printf("switchChainAddress, RVNParams.PubKeyHashAddrID %d \n", RVNParams.PubKeyHashAddrID)
 	case "okt":
 		address := ecrypto.PubkeyToAddress(*ecdsaPk)
 		addressStr = address.Hex()
@@ -244,6 +253,40 @@ func SwitchChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) 
 		return "", fmt.Errorf("ecdsa, unsupport chain type for %s", chain)
 	}
 	return addressStr, nil
+}
+
+func SwitchEddsaChainAddress(publicKey *edwards.PublicKey, chain string) (addressStr string, err error) {
+	switch chain {
+	case "sol":
+		addressStr = base58.Encode(publicKey.Serialize())
+	case "apt":
+		accountAddress := models.AccountAddress{}
+		accountAddress = crypto.SingleSignerAuthKey(publicKey.Serialize())
+		addressStr = accountAddress.PrefixZeroTrimmedHex()
+	case "dot":
+		addressStr, err = DOTPublicKeyToAddress(publicKey.Serialize(), DOTNetWorkByteMap["DOT"])
+		if err != nil {
+			return "", err
+		}
+	default:
+		return "", fmt.Errorf("eddsa, unsupport chain type: %s", chain)
+	}
+	return addressStr, nil
+}
+
+func DOTPublicKeyToAddress(pub []byte, network byte) (string, error) {
+	enc := append([]byte{network}, pub...)
+	hasher, err := blake2b.New(64, nil)
+	if err != nil {
+		return "", err
+	}
+	_, err = hasher.Write(append(ss58Prefix, enc...))
+	if err != nil {
+		return "", err
+	}
+	checksum := hasher.Sum(nil)
+
+	return base58.Encode(append(enc, checksum[:2]...)), nil
 }
 
 func makeBtcAddress(ecdsaPk *ecdsa.PublicKey, params *chaincfg.Params) (addressStr string, err error) {

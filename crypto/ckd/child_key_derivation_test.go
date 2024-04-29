@@ -9,9 +9,9 @@ package ckd_test
 import (
 	"testing"
 
-	. "recovery-tool/crypto/ckd"
-
 	"github.com/btcsuite/btcd/btcec"
+
+	. "recovery-tool/crypto/ckd"
 )
 
 func TestPublicDerivation(t *testing.T) {

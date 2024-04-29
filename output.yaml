@@ -23,9 +23,21 @@
   address: TAK3K7sUbCXoZygSihq9WLYE5gH4Bb7J13
   private_key: 1b6fa9649db36674ce6e41e3b932a76794a94800e65b37ca22a7629f31090783
 - vault_index: 0
+  coin_type: dot
+  address: 13GYH7z9MFWNk4KTupc82NYXEAStcreK6xwQ8hR97edwocFB
+  private_key: 0c4417fae8c9c66de1b6027de257019d212a2a52c987beaf1f997c943332ad3f
+- vault_index: 0
+  coin_type: sol
+  address: GQyzTgiX35LLoHpvP47SK6xHEEkzeArbBDMJpSXuQJYq
+  private_key: 0504fa1b354a2bfba841680534199f03aac750634380e8237b34ac01485ffa3b
+- vault_index: 0
   coin_type: ht_heco
   address: 0x576A7404B405362FD6c98e35D551872145a89911
   private_key: eab2b2a8981f8005bbc48b2e123563dc758d082503803e429cbda27c3190c663
+- vault_index: 0
+  coin_type: apt
+  address: 0xb6dfbfde05a44102d3839d30a7a681b43d0b83e0afb79c81a75642d49eb40ff1
+  private_key: 011894861942a81e7bdb73f04632f4287a24d404e5e07f688d4dd2c101bee087
 - vault_index: 0
   coin_type: bnb_bsc
   address: 0x23c18D9e1C0FBf7fbb609598Ece05924Fa020871

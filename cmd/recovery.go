@@ -8,12 +8,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/big"
-	"recovery-tool/common"
-	"recovery-tool/crypto"
 
 	"github.com/alecthomas/gometalinter/_linters/src/gopkg.in/yaml.v2"
 	"github.com/btcsuite/btcd/btcec"
 	ecies "github.com/ecies/go/v2"
+
+	"recovery-tool/common"
+	"recovery-tool/crypto"
 )
 
 const (
@@ -74,14 +75,26 @@ func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
 		return nil, err
 	}
 
+	userPubKey := crypto.ScalarBaseMult(btcec.S256(), parsed.UserPrivKeyScalar)
+
+	pubKey, err := hbcPrivs[0].PubKey.Add(hbcPrivs[1].PubKey)
+	if err != nil {
+		return nil, err
+	}
+	pubKey, err = pubKey.Add(userPubKey)
+	if err != nil {
+		return nil, err
+	}
+
 	privs := &common.RootKeys{
 		HbcShare0: hbcPrivs[0],
 		HbcShare1: hbcPrivs[1],
 		UsrShare: &common.RootKey{
 			PrivKey:   parsed.UserPrivKeyScalar,
-			PubKey:    crypto.ScalarBaseMult(btcec.S256(), parsed.UserPrivKeyScalar),
+			PubKey:    userPubKey,
 			ChainCode: parsed.UserChainCode[:],
 		},
+		PubKey: pubKey,
 	}
 
 	keys, err := deriveChilds(params.VaultCount, params.CoinType, privs)
@@ -283,7 +296,7 @@ func deriveChilds(vaultCount int, coinType []int, rootKeys *common.RootKeys) ([]
 	for vaultIndex := 0; vaultIndex < vaultCount; vaultIndex++ {
 		for _, coin := range coinType {
 			hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coin) // Only support asset wallet for now
-			privKey, address, err := common.DeriveChild(rootKeys, hdPath)
+			privKey, address, err := common.DeriveChild(rootKeys, hdPath, coin)
 			if err != nil {
 				return nil, fmt.Errorf("derive child failed, err: %s", err.Error())
 			}
