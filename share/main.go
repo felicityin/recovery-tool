@@ -1,12 +1,8 @@
 package main
 
-/*
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-*/
-
+//#include <file.h>
 import "C"
+
 import (
 	"encoding/json"
 	"fmt"
@@ -17,31 +13,36 @@ import (
 	"strings"
 )
 
-type RSResult struct {
-	Success bool                `json:"success"`
-	ErrMsg  string              `json:"errMsg"`
-	Data    []*cmd.DeriveResult `json:"data"`
+//export GetKey
+func GetKey(youKey string) *C.char {
+	fmt.Println("hello, dart")
+	theKey := "This is input key: " + youKey
+	return C.CString(theKey)
 }
 
-func (r *RSResult) ToJson() string {
-	b, _ := json.Marshal(r)
-	return string(b)
+//export SumTest
+func SumTest(a, b int) C.int {
+	return C.int(a + b)
 }
 
-//export PrintHello
-func PrintHello(name string) string {
-	return "Hello " + name
+//export GetRSResult
+func GetRSResult(s string) C.RSResult {
+	return C.RSResult{
+		errMsg: C.CString(""),
+		data:   C.CString(s),
+		ok:     C.TRUE,
+	}
 }
 
 //export GoRecovery
-func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, coinTypes string) string {
-	rs := &RSResult{}
-
+func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, coinTypes string) C.RSResult {
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
-		rs.Success = false
-		rs.ErrMsg = "vaultCount not int"
-		return rs.ToJson()
+		return C.RSResult{
+			errMsg: C.CString(err.Error()),
+			data:   C.CString(""),
+			ok:     C.FALSE,
+		}
 	}
 
 	coinTypesList := strings.Split(coinTypes, ",")
@@ -49,9 +50,11 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, coi
 	for i, coinType := range coinTypesList {
 		coinTypeInt, err := strconv.Atoi(coinType)
 		if err != nil {
-			rs.Success = false
-			rs.ErrMsg = "coinTypes invalid"
-			return rs.ToJson()
+			return C.RSResult{
+				errMsg: C.CString("coinTypes invalid"),
+				data:   C.CString(""),
+				ok:     C.FALSE,
+			}
 		}
 		coinTypesSlice[i] = coinTypeInt
 	}
@@ -67,15 +70,20 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, coi
 
 	recoverResult, err := cmd.RecoverKeys(input)
 	if err != nil {
-		rs.Success = false
-		rs.ErrMsg = fmt.Sprintf("recover fail: %s", err.Error())
-		return rs.ToJson()
+		return C.RSResult{
+			errMsg: C.CString(fmt.Sprintf("recover fail: %s", err.Error())),
+			data:   C.CString(""),
+			ok:     C.FALSE,
+		}
 	}
 
-	rs.Success = true
-	rs.Data = recoverResult
-	return rs.ToJson()
-
+	resBytes, _ := json.Marshal(recoverResult)
+	data := string(resBytes)
+	return C.RSResult{
+		errMsg: C.CString(""),
+		data:   C.CString(data),
+		ok:     C.TRUE,
+	}
 }
 
 func main() {

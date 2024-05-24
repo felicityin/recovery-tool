@@ -43,6 +43,7 @@ const (
 	HECO      = Zero + 553
 	Avalanche = Zero + 43114
 	Apt       = Zero + 637
+	Dot       = Zero + 354
 	SUI       = Zero + 784
 	SOL       = Zero + 501
 )

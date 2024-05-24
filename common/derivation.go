@@ -87,11 +87,11 @@ func DeriveAddress(privKey *big.Int, hdPath string) (string, error) {
 		return "", err
 	}
 	chainUint32 := uint32(chainInt)
-	chain := SwitchChain(chainUint32)
+	chain := GetChainName(chainUint32)
 	return switchChainAddress(publicKey, chain)
 }
 
-func SwitchChain(coinType uint32) string {
+func GetChainName(coinType uint32) string {
 	var chain string
 
 	switch coinType + Zero {
@@ -105,8 +105,8 @@ func SwitchChain(coinType uint32) string {
 		chain = "eth"
 	case BCH:
 		chain = "bch"
-	case DASH:
-		chain = "dash"
+	//case DASH:
+	//	chain = "dash"
 	case TRX:
 		chain = "trx"
 	case HECO:
@@ -114,9 +114,15 @@ func SwitchChain(coinType uint32) string {
 	case BSC:
 		chain = "eth"
 	case POLYGON:
-		chain = "eth_arbitrum"
+		chain = "eth"
 	case ARBITRUM:
-		chain = "matic_polygon"
+		chain = "eth"
+	case SOL:
+		chain = "sol"
+	case Apt:
+		chain = "apt"
+	case Dot:
+		chain = "dot"
 	default:
 		panic("invalid chain type")
 	}

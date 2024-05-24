@@ -49,13 +49,17 @@ type parsedParams struct {
 func RecoverKeysCmd(paramsPath string, outputPath string) error {
 	params := loadRecoveryParams(paramsPath)
 
+	if params.VaultCount <= 0 {
+		return fmt.Errorf("vaultCount must > 1")
+	}
+
 	result, err := RecoverKeys(params)
 	if err != nil {
 		common.Logger.Errorf("derive keys failed")
 		return err
 	}
 
-	if err := saveResult(&result, outputPath); err != nil {
+	if err = saveResult(&result, outputPath); err != nil {
 		common.Logger.Errorf("save result failed")
 		return err
 	}
@@ -292,8 +296,8 @@ func deriveChilds(vaultCount int, coinType []int, rootKeys *common.RootKeys) ([]
 			privKeyBytes := privKey.FillBytes(buf[:])
 
 			deriveResult = append(deriveResult, &DeriveResult{
-				VaultIndex: vaultIndex,
-				CoinType:   common.SwitchChain(uint32(coin)),
+				VaultIndex: vaultIndex + 1,
+				CoinType:   common.GetChainName(uint32(coin)),
 				Address:    address,
 				PrivKey:    hex.EncodeToString(privKeyBytes),
 			})
