@@ -5,12 +5,20 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"encoding/hex"
 	"encoding/pem"
 	"errors"
 )
 
 func ParseRsaPrivKey(privKey string) (*rsa.PrivateKey, error) {
-	block, _ := pem.Decode([]byte(privKey))
+	var block *pem.Block
+	decoded, err := hex.DecodeString(privKey)
+	if err == nil {
+		block, _ = pem.Decode(decoded)
+	} else {
+		block, _ = pem.Decode([]byte(privKey))
+	}
+
 	if block == nil {
 		return nil, errors.New("private key error")
 	}

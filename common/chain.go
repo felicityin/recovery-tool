@@ -19,6 +19,12 @@ import (
 	"golang.org/x/crypto/blake2b"
 )
 
+const (
+	SignKindEcdsa   = 0 //ecdsa
+	SignKindEddsa   = 1 //eddsa 只有keygen和sign
+	SignKindSchnorr = 2 //schnorr
+)
+
 // zero is deafult of uint32
 const (
 	Zero      uint32 = 0
@@ -27,7 +33,7 @@ const (
 	ETHToken  uint32 = 0x20000000
 )
 
-// wallet type from bip44
+// coin type from bip44
 const (
 	// https://github.com/satoshilabs/slips/blob/master/slip-0044.md#registered-coin-types
 	BTC       = Zero + 0
@@ -52,6 +58,154 @@ const (
 	SOL       = Zero + 501
 	DOT       = Zero + 354
 )
+
+type Option struct {
+	Name string `json:"name"`
+	Val  string `json:"val"`
+}
+
+// chain name
+const (
+	BitcoinChain     = "Bitcoin"
+	EthereumChain    = "Ethereum"
+	TronChain        = "Tron"
+	BSCChain         = "BSC"
+	BitcoinCashChain = "Bitcoin Cash"
+	DogeChain        = "Doge"
+	LitecoinChain    = "Litecoin"
+	HecoChain        = "Heco"
+	PolygonChain     = "Polygon"
+	ArbitrumChain    = "Arbitrum"
+	PolkadotChain    = "Polkadot"
+	AptostChain      = "Aptos"
+	SolanaChain      = "Solana"
+	BaseChain        = "Base Chain"
+)
+
+var ChainList = []Option{
+	{
+		Name: BitcoinChain,
+		Val:  BitcoinChain,
+	},
+	{
+		Name: EthereumChain,
+		Val:  EthereumChain,
+	},
+	{
+		Name: TronChain,
+		Val:  TronChain,
+	},
+	{
+		Name: BSCChain,
+		Val:  BSCChain,
+	},
+	{
+		Name: BitcoinCashChain,
+		Val:  BitcoinCashChain,
+	},
+	{
+		Name: DogeChain,
+		Val:  DogeChain,
+	},
+	{
+		Name: LitecoinChain,
+		Val:  LitecoinChain,
+	},
+	{
+		Name: HecoChain,
+		Val:  HecoChain,
+	},
+	{
+		Name: PolygonChain,
+		Val:  PolygonChain,
+	},
+	{
+		Name: ArbitrumChain,
+		Val:  ArbitrumChain,
+	},
+	{
+		Name: PolkadotChain,
+		Val:  PolkadotChain,
+	},
+	{
+		Name: AptostChain,
+		Val:  AptostChain,
+	},
+	{
+		Name: SolanaChain,
+		Val:  SolanaChain,
+	},
+	{
+		Name: BaseChain,
+		Val:  BaseChain,
+	},
+}
+
+type CoinInfo struct {
+	SignKind int    // 币种对应签名算法
+	CoinType uint32 // 币种使用的coin type
+}
+
+var ChainInfos = map[string]CoinInfo{
+	BitcoinChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: BTC,
+	},
+	LitecoinChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: LTC,
+	},
+	DogeChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: DOGE,
+	},
+	EthereumChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: ETH,
+	},
+	BitcoinCashChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: BCH,
+	},
+	BSCChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: ETH,
+	},
+	HecoChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: ETH,
+	},
+	TronChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: TRX,
+	},
+	PolygonChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: ETH,
+	},
+	ArbitrumChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: ETH,
+	},
+	BaseChain: CoinInfo{
+		SignKind: SignKindEcdsa,
+		CoinType: ETH,
+	},
+
+	// eddsa
+	AptostChain: CoinInfo{
+		SignKind: SignKindEddsa,
+		CoinType: Apt,
+	},
+	SolanaChain: CoinInfo{
+		SignKind: SignKindEddsa,
+		CoinType: SOL,
+	},
+	PolkadotChain: CoinInfo{
+		SignKind: SignKindEddsa,
+		CoinType: DOT,
+	},
+}
 
 var ss58Prefix = []byte("SS58PRE")
 var DOTNetWorkByteMap = map[string]byte{
@@ -269,7 +423,7 @@ func SwitchEddsaChainAddress(publicKey *edwards.PublicKey, chain string) (addres
 			return "", err
 		}
 	default:
-		return "", fmt.Errorf("eddsa, unsupport chain type: %s", chain)
+		return "", fmt.Errorf("eddsa unsupport chain type: %s", chain)
 	}
 	return addressStr, nil
 }

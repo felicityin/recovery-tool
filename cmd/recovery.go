@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/big"
+	"strings"
 
 	"github.com/alecthomas/gometalinter/_linters/src/gopkg.in/yaml.v2"
 	"github.com/btcsuite/btcd/btcec"
@@ -24,17 +25,18 @@ const (
 )
 
 type RecoveryInput struct {
-	ZipPath      string `yaml:"zip_path"`
-	UserMnemonic string `yaml:"user_mnemonic"`
-	EciesPrivKey string `yaml:"ecies_private_key"`
-	RsaPrivKey   string `yaml:"coincover_private_key"`
-	VaultCount   int    `yaml:"valut_count"`
-	CoinType     []int  `yaml:"coin_type"`
+	ZipPath      string   `yaml:"zip_path"`
+	UserMnemonic string   `yaml:"user_mnemonic"`
+	EciesPrivKey string   `yaml:"ecies_private_key"`
+	RsaPrivKey   string   `yaml:"rsa_private_key"`
+	VaultCount   int      `yaml:"valut_count"`
+	CoinType     []int    `yaml:"coin_type"`
+	Chains       []string `yaml:"chains"`
 }
 
 type DeriveResult struct {
 	VaultIndex int    `yaml:"vault_index"`
-	CoinType   string `yaml:"coin_type"`
+	Chain      string `yaml:"chain"`
 	Address    string `yaml:"address"`
 	PrivKey    string `yaml:"private_key"`
 }
@@ -64,6 +66,10 @@ func RecoverKeysCmd(paramsPath string, outputPath string) error {
 }
 
 func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
+	if err := checkParams(params); err != nil {
+		return nil, err
+	}
+
 	parsed, err := parseParams(params)
 	if err != nil {
 		return nil, err
@@ -97,7 +103,7 @@ func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
 		PubKey: pubKey,
 	}
 
-	keys, err := deriveChilds(params.VaultCount, params.CoinType, privs)
+	keys, err := deriveChilds2(params.VaultCount, params.Chains, privs)
 	if err != nil {
 		common.Logger.Errorf("derive childs failed: %s", err)
 		return nil, err
@@ -113,11 +119,57 @@ func loadRecoveryParams(path string) RecoveryInput {
 	}
 
 	var params RecoveryInput
-	if err := yaml.UnmarshalStrict(bytess, &params); err != nil {
+	if err = yaml.UnmarshalStrict(bytess, &params); err != nil {
 		common.Logger.Errorf("unmarshal params error: %s", err.Error())
 		panic(err)
 	}
 	return params
+}
+
+func checkParams(params RecoveryInput) (err error) {
+	if len(params.ZipPath) <= 0 {
+		return fmt.Errorf("zip_path cannot be empty")
+	}
+
+	userMnemonics := strings.Split(params.UserMnemonic, " ")
+	if len(userMnemonics) != 24 {
+		return fmt.Errorf("user_mnemonic not 24 words")
+	}
+
+	if len(params.EciesPrivKey) <= 0 {
+		return fmt.Errorf("ecies_private_key cannot be empty")
+	}
+
+	if len(params.RsaPrivKey) <= 0 {
+		return fmt.Errorf("rsa_private_key cannot be empty")
+	}
+
+	if params.VaultCount <= 0 {
+		return fmt.Errorf("valut_count must > 1")
+	}
+
+	if len(params.CoinType) <= 0 && len(params.Chains) <= 0 {
+		return fmt.Errorf("coin_type and chains cannot be empty")
+	}
+
+	if len(params.Chains) > 0 {
+		chainMap := make(map[string]struct{})
+		for _, chainName := range params.Chains {
+			if _, ok := common.ChainInfos[chainName]; !ok {
+				return fmt.Errorf("unsupported chain: %s", chainName)
+			}
+			chainMap[chainName] = struct{}{}
+		}
+		chains := make([]string, len(chainMap))
+		i := 0
+		for key, _ := range chainMap {
+			chains[i] = key
+			i++
+		}
+		params.Chains = chains
+	}
+
+	return nil
 }
 
 func parseParams(params RecoveryInput) (*parsedParams, error) {
@@ -131,18 +183,19 @@ func parseParams(params RecoveryInput) (*parsedParams, error) {
 	common.Logger.Debugf("user pubkey: %s", userPubKey)
 
 	eciesPrivKey, err := ecies.NewPrivateKeyFromHex(params.EciesPrivKey)
-	common.Logger.Debugf("ecies privkey: %d", eciesPrivKey.D)
 	if err != nil {
 		common.Logger.Errorf("load ecies privkey failed: %s", err)
 		return nil, err
 	}
+	common.Logger.Debugf("ecies privkey: %d", eciesPrivKey.D)
 
 	rsaPrivKey, err := crypto.ParseRsaPrivKey(params.RsaPrivKey)
-	common.Logger.Debugf("rsa privkey: %d, %d", rsaPrivKey.Primes[0], rsaPrivKey.Primes[1])
 	if err != nil {
 		common.Logger.Errorf("parse rsa privkey failed: %s", err)
 		return nil, err
 	}
+
+	common.Logger.Debugf("rsa privkey: %d, %d", rsaPrivKey.Primes[0], rsaPrivKey.Primes[1])
 
 	return &parsedParams{
 		UserPrivKeyScalar: usrPrivKeyScalar,
@@ -305,8 +358,36 @@ func deriveChilds(vaultCount int, coinType []int, rootKeys *common.RootKeys) ([]
 			privKeyBytes := privKey.FillBytes(buf[:])
 
 			deriveResult = append(deriveResult, &DeriveResult{
-				VaultIndex: vaultIndex,
-				CoinType:   common.SwitchChain(uint32(coin)),
+				VaultIndex: vaultIndex + 1,
+				Chain:      common.SwitchCoin(uint32(coin)),
+				Address:    address,
+				PrivKey:    hex.EncodeToString(privKeyBytes),
+			})
+		}
+	}
+
+	return deriveResult, nil
+}
+
+func deriveChilds2(vaultCount int, chains []string, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
+	var deriveResult []*DeriveResult
+
+	for vaultIndex := 0; vaultIndex < vaultCount; vaultIndex++ {
+		for _, chainName := range chains {
+			coinInfo, _ := common.ChainInfos[chainName]
+
+			hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coinInfo.CoinType) // Only support asset wallet for now
+			privKey, address, err := common.DeriveChild(rootKeys, hdPath, int(coinInfo.CoinType))
+			if err != nil {
+				return nil, fmt.Errorf("derive child failed, err: %s", err.Error())
+			}
+
+			var buf [32]byte
+			privKeyBytes := privKey.FillBytes(buf[:])
+
+			deriveResult = append(deriveResult, &DeriveResult{
+				VaultIndex: vaultIndex + 1,
+				Chain:      chainName,
 				Address:    address,
 				PrivKey:    hex.EncodeToString(privKeyBytes),
 			})
