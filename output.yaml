@@ -1,12 +1,12 @@
 - vault_index: 0
-  coin_type: btc
+  chain: btc
   address: 1ENcrJTorrcxztCvc9ZAfi8WphUCb4qvpJ
   private_key: f234818f5f3be2ea73cfec661c127f231bb291a086394593ec43016197e20540
 - vault_index: 0
-  coin_type: eth
+  chain: eth
   address: 0xa26BD1402A25d5c08aAB137f8d6aFbC92e4f4253
   private_key: cbc990db5c7631d0b831913d8d805259773d171ff5eb587a095d0d2d97916cdf
 - vault_index: 0
-  coin_type: eth
+  chain: eth
   address: 0xDe29066fBd0718BC80633b570D80D70C81835B15
   private_key: aa2d8f1478c618116afe20672617c9a783dd8047a678cb341d5acb194d51fe3d

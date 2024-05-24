@@ -73,7 +73,7 @@ func DerivePrivKey(params *RootKeys, hdPath string, coin int) (*big.Int, error) 
 }
 
 func DeriveAddress(privKey *big.Int, hdPath string, coin int) (string, error) {
-	chain := GetChainName(uint32(coin))
+	chain := SwitchCoin(uint32(coin))
 
 	if isEddsaCoin(coin) {
 		pubECPoint := crypto.ScalarBaseMult(edwards.Edwards(), privKey)
@@ -90,7 +90,7 @@ func DeriveAddress(privKey *big.Int, hdPath string, coin int) (string, error) {
 	}
 }
 
-func GetChainName(coinType uint32) string {
+func SwitchCoin(coinType uint32) string {
 	var chain string
 
 	switch coinType + Zero {
@@ -109,9 +109,9 @@ func GetChainName(coinType uint32) string {
 	case TRX:
 		chain = "trx"
 	case HECO:
-		chain = "ht_heco"
+		chain = "eth"
 	case BSC:
-		chain = "bnb_bsc"
+		chain = "eth"
 	case POLYGON:
 		chain = "eth"
 	case ARBITRUM:
@@ -183,4 +183,9 @@ func DeriveEddsaChildPrivKey(
 
 func isEddsaCoin(coin int) bool {
 	return coin == 354 || coin == 501 || coin == 637
+}
+
+func isEthAddress(chain string) bool {
+	return chain == EthereumChain || chain == BSCChain || chain == HecoChain || chain == PolygonChain ||
+		chain == ArbitrumChain || chain == BaseChain
 }

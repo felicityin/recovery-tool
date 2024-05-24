@@ -1,24 +1,24 @@
 zip_path: ./test/archive_f5a4b26f3c2231dec42ff8c4ade8530c.zip
 valut_count: 2
-# Supported coin type:
-# https://github.com/satoshilabs/slips/blob/master/slip-0044.md#registered-coin-types
-# BTC      = 0
-# ETH      = 60
-# TRX      = 195
-# BSC      = 714
-# BCH      = 145
-# DOGE     = 3
-# LTC      = 2
-# HECO     = 553
-# POLYGON  = 966
-# ARBITRUM = 9001
-# SOL      = 501
-# DOT      = 354
-# APT      = 637
-coin_type: [0, 60, 714]
+# Supported chain:
+# Bitcoin
+# Ethereum
+# Tron
+# BSC
+# Bitcoin Cash
+# Doge
+# Litecoin
+# Heco
+# Polygon
+# Arbitrum
+# Polkadot
+# Aptos
+# Solana
+# Base Chain
+chains: ["Bitcoin", "Ethereum", "Tron", "BSC", "Bitcoin Cash", "Doge", "Litecoin", "Heco", "Polygon", "Arbitrum", "Polkadot", "Aptos", "Solana", "Base Chain"]
 user_mnemonic: hope advice dry crystal sail limb zero cabbage beauty quote season inflict clip priority boil slight hunt rifle confirm dutch silly dad caught present
 ecies_private_key: 224b721ba660aafc15624d80b089d6a6585d19efbcb36717b09f2f94b8aafbe7
-coincover_private_key: |
+rsa_private_key: |
   -----BEGIN PRIVATE KEY-----
   MIIJQgIBADANBgkqhkiG9w0BAQEFAASCCSwwggkoAgEAAoICAQC5/ww0rOdE9W8q
   SVRXaKfMpyNaU58Z9rLwHxQ4unjv+RBcjLVKtQR+RDGfOFpSa/tnGwc7q+/OJeCP

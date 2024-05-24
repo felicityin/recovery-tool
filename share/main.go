@@ -9,6 +9,7 @@ import (
 	"github.com/alecthomas/gometalinter/_linters/src/gopkg.in/yaml.v2"
 	"os"
 	"recovery-tool/cmd"
+	"recovery-tool/common"
 	"strconv"
 	"strings"
 )
@@ -34,8 +35,14 @@ func GetRSResult(s string) C.RSResult {
 	}
 }
 
+//export GetChainList
+func GetChainList(s string) *C.char {
+	chainList, _ := json.Marshal(common.ChainList)
+	return C.CString(string(chainList))
+}
+
 //export GoRecovery
-func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, coinTypes string) C.RSResult {
+func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, chains string) C.RSResult {
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
 		return C.RSResult{
@@ -45,27 +52,14 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, coi
 		}
 	}
 
-	coinTypesList := strings.Split(coinTypes, ",")
-	coinTypesSlice := make([]int, len(coinTypesList))
-	for i, coinType := range coinTypesList {
-		coinTypeInt, err := strconv.Atoi(coinType)
-		if err != nil {
-			return C.RSResult{
-				errMsg: C.CString("coinTypes invalid"),
-				data:   C.CString(""),
-				ok:     C.FALSE,
-			}
-		}
-		coinTypesSlice[i] = coinTypeInt
-	}
-
+	chainList := strings.Split(chains, ",")
 	input := cmd.RecoveryInput{
 		ZipPath:      zipPath,
 		UserMnemonic: userMnemonic,
 		EciesPrivKey: eciesPrivKey,
 		RsaPrivKey:   rsaPrivKey,
 		VaultCount:   vaultCountInt,
-		CoinType:     coinTypesSlice,
+		Chains:       chainList,
 	}
 
 	recoverResult, err := cmd.RecoverKeys(input)
