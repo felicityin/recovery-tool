@@ -2,10 +2,11 @@ package common_test
 
 import (
 	"encoding/hex"
-	"recovery-tool/common"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"recovery-tool/common"
 )
 
 func TestMnemonic(t *testing.T) {

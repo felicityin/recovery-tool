@@ -5,6 +5,10 @@ valut_count: 1
 # BTC      = 0
 # ETH      = 60
 # TRX      = 195
+# DOT      = 354
+# SOL      = 501
+# HECO     = 553
+# Apt      = 637
 # BSC      = 714
 # BCH      = 145
 # DOGE     = 3
@@ -12,10 +16,7 @@ valut_count: 1
 # HECO     = 553
 # POLYGON  = 966
 # ARBITRUM = 9001
-# SOL      = 501
-# DOT      = 354
-# APT      = 637
-coin_type: [0, 60]
+coin_type: [0, 2, 3, 60, 145, 195, 354, 501, 553, 637, 714, 966, 9001]
 user_mnemonic: amused garlic window please enrich sick gate ready owner giraffe elite umbrella hair seat punch seminar notable enroll wet asset outdoor inflict rich mushroom
 ecies_private_key: ea5db436b7508e5c8ec3ae17003bcb997c30e03c655f0dd2d1824ec93bd0501c
 coincover_private_key: |

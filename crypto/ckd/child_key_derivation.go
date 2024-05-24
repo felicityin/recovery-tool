@@ -17,12 +17,12 @@ import (
 	"strconv"
 	"strings"
 
-	"recovery-tool/crypto"
-	"recovery-tool/crypto/common"
-
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil/base58"
 	"golang.org/x/crypto/ripemd160"
+
+	"recovery-tool/crypto"
+	"recovery-tool/crypto/common"
 )
 
 type ExtendedKey struct {
