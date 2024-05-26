@@ -20,15 +20,7 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 
 #line 3 "main.go"
-
-#define BOOL int
-#define TRUE 1
-#define FALSE 0
-typedef struct{
-	char *errMsg;
-	char *data;
-	BOOL ok;
-} RSResult;
+#include "file.h"
 
 #line 1 "cgo-generated-wrapper"
 
