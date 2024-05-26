@@ -19,6 +19,18 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 /* Start of preamble from import "C" comments.  */
 
 
+#line 3 "main.go"
+
+#define BOOL int
+#define TRUE 1
+#define FALSE 0
+typedef struct{
+	char *errMsg;
+	char *data;
+	BOOL ok;
+} RSResult;
+
+#line 1 "cgo-generated-wrapper"
 
 
 /* End of preamble from import "C" comments.  */
@@ -74,8 +86,11 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern __declspec(dllexport) GoString PrintHello(GoString name);
-extern __declspec(dllexport) GoString GoRecovery(GoString zipPath, GoString userMnemonic, GoString eciesPrivKey, GoString rsaPrivKey, GoString vaultCount, GoString coinTypes);
+extern __declspec(dllexport) char* GetKey(GoString youKey);
+extern __declspec(dllexport) int SumTest(GoInt a, GoInt b);
+extern __declspec(dllexport) RSResult GetRSResult(GoString s);
+extern __declspec(dllexport) char* GetChainList();
+extern __declspec(dllexport) RSResult GoRecovery(GoString zipPath, GoString userMnemonic, GoString eciesPrivKey, GoString rsaPrivKey, GoString vaultCount, GoString chains);
 
 #ifdef __cplusplus
 }

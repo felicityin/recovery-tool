@@ -43,7 +43,7 @@ func GetRSResult(s string) C.RSResult {
 }
 
 //export GetChainList
-func GetChainList(s string) *C.char {
+func GetChainList() *C.char {
 	chainList, _ := json.Marshal(common.ChainList)
 	return C.CString(string(chainList))
 }
