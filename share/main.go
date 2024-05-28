@@ -6,6 +6,7 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"recovery-tool/cmd"
 	"recovery-tool/common"
 	"strconv"
@@ -40,11 +41,20 @@ func GetChainList() *C.char {
 }
 
 //export GoRecovery
-func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, chains string) C.RSResult {
+func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains string) C.RSResult {
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(err.Error()),
+			errMsg: C.CString("vaultCount must be a number"),
+			data:   C.CString(""),
+			ok:     C.FALSE,
+		}
+	}
+
+	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
+	if err != nil {
+		return C.RSResult{
+			errMsg: C.CString(fmt.Sprintf("RSA file read failed: %s", err.Error())),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -55,7 +65,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, cha
 		ZipPath:      zipPath,
 		UserMnemonic: userMnemonic,
 		EciesPrivKey: eciesPrivKey,
-		RsaPrivKey:   rsaPrivKey,
+		RsaPrivKey:   string(rsaBytes),
 		VaultCount:   vaultCountInt,
 		Chains:       chainList,
 	}
@@ -63,7 +73,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, cha
 	recoverResult, err := cmd.RecoverKeys(input)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(fmt.Sprintf("recover fail: %s", err.Error())),
+			errMsg: C.CString(fmt.Sprintf("Recover failed: %s", err.Error())),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -77,6 +87,38 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKey, vaultCount, cha
 		ok:     C.TRUE,
 	}
 }
+
+//func GoRecoveryTest(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains string) (err error) {
+//	vaultCountInt, err := strconv.Atoi(vaultCount)
+//	if err != nil {
+//		return err
+//	}
+//
+//	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
+//	if err != nil {
+//		return err
+//	}
+//
+//	chainList := strings.Split(chains, ",")
+//	input := cmd.RecoveryInput{
+//		ZipPath:      zipPath,
+//		UserMnemonic: userMnemonic,
+//		EciesPrivKey: eciesPrivKey,
+//		RsaPrivKey:   string(rsaBytes),
+//		VaultCount:   vaultCountInt,
+//		Chains:       chainList,
+//	}
+//
+//	recoverResult, err := cmd.RecoverKeys(input)
+//	if err != nil {
+//		return err
+//	}
+//
+//	resBytes, _ := json.Marshal(recoverResult)
+//	data := string(resBytes)
+//	fmt.Printf("data: %s", data)
+//	return nil
+//}
 
 func main() {
 

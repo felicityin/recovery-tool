@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/alecthomas/gometalinter/_linters/src/gopkg.in/yaml.v2"
 	"os"
 	"recovery-tool/cmd"
@@ -11,23 +10,22 @@ import (
 )
 
 // must remove import "C"
-func TestGoRecovery(t *testing.T) {
-	bytess, err := os.ReadFile("../input.yaml")
+func TestGoRecoveryTest(t *testing.T) {
+	bytess, err := os.ReadFile("./input1.yaml")
 	if err != nil {
-		t.Error(err)
+		panic(err)
 	}
 
 	var input cmd.RecoveryInput
 	if err := yaml.UnmarshalStrict(bytess, &input); err != nil {
-		t.Error(err)
+		panic(err)
 	}
-	input.ZipPath = "../test/134_archive.zip"
+
 	vaultCountStr := strconv.Itoa(input.VaultCount)
-	coinTypeStr := ""
-	for _, c := range input.CoinType {
-		coinTypeStr += strconv.Itoa(c) + ","
+	chainStr := ""
+	for _, chainName := range input.Chains {
+		chainStr += chainName + ","
 	}
-	coinTypeStr = strings.TrimRight(coinTypeStr, ",")
-	res := GoRecovery(input.ZipPath, input.UserMnemonic, input.EciesPrivKey, input.RsaPrivKey, vaultCountStr, coinTypeStr)
-	fmt.Printf("res: %v \n", res)
+	chainStr = strings.TrimRight(chainStr, ",")
+	GoRecoveryTest(input.ZipPath, input.UserMnemonic, input.EciesPrivKey, "./test/private_f5a4b26f3c2231dec42ff8c4ade8530c.key", vaultCountStr, chainStr)
 }

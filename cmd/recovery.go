@@ -132,19 +132,22 @@ func checkParams(params RecoveryInput) (err error) {
 
 	userMnemonics := strings.Split(params.UserMnemonic, " ")
 	if len(userMnemonics) != 24 {
-		return fmt.Errorf("user_mnemonic not 24 words")
+		return fmt.Errorf("mnemonic word not 24 words")
+	}
+	for i, word := range userMnemonics {
+		userMnemonics[i] = strings.TrimSpace(word)
 	}
 
 	if len(params.EciesPrivKey) <= 0 {
-		return fmt.Errorf("ecies_private_key cannot be empty")
+		return fmt.Errorf("ECIES key cannot be empty")
 	}
 
 	if len(params.RsaPrivKey) <= 0 {
-		return fmt.Errorf("rsa_private_key cannot be empty")
+		return fmt.Errorf("RSA key cannot be empty")
 	}
 
 	if params.VaultCount <= 0 {
-		return fmt.Errorf("valut_count must > 1")
+		return fmt.Errorf("VaultCount must > 1")
 	}
 
 	if len(params.CoinType) <= 0 && len(params.Chains) <= 0 {
@@ -161,8 +164,8 @@ func checkParams(params RecoveryInput) (err error) {
 		}
 		chains := make([]string, len(chainMap))
 		i := 0
-		for key, _ := range chainMap {
-			chains[i] = key
+		for chainName, _ := range chainMap {
+			chains[i] = strings.TrimSpace(chainName)
 			i++
 		}
 		params.Chains = chains
@@ -191,7 +194,7 @@ func parseParams(params RecoveryInput) (*parsedParams, error) {
 	rsaPrivKey, err := crypto.ParseRsaPrivKey(params.RsaPrivKey)
 	if err != nil {
 		common.Logger.Errorf("parse rsa privkey failed: %s", err)
-		return nil, err
+		return nil, fmt.Errorf("RSA Private Key parse failed")
 	}
 
 	common.Logger.Debugf("rsa privkey: %d, %d", rsaPrivKey.Primes[0], rsaPrivKey.Primes[1])
