@@ -82,7 +82,7 @@ extern __declspec(dllexport) char* GetKey(GoString youKey);
 extern __declspec(dllexport) int SumTest(GoInt a, GoInt b);
 extern __declspec(dllexport) RSResult GetRSResult(GoString s);
 extern __declspec(dllexport) char* GetChainList();
-extern __declspec(dllexport) RSResult GoRecovery(GoString zipPath, GoString userMnemonic, GoString eciesPrivKey, GoString rsaPrivKey, GoString vaultCount, GoString chains);
+extern __declspec(dllexport) RSResult GoRecovery(GoString zipPath, GoString userMnemonic, GoString eciesPrivKey, GoString rsaPrivKeyPath, GoString vaultCount, GoString chains);
 
 #ifdef __cplusplus
 }
