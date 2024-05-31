@@ -8,13 +8,12 @@ import (
 )
 
 func main() {
-	var inputPath, outputPath string
-	flag.StringVar(&inputPath, "i", "./input.yaml", "the path of input parmas")
-	flag.StringVar(&outputPath, "o", "./output.yaml", "the path of result")
-
-	err := cmd.RecoverKeysCmd(inputPath, outputPath)
+	inputPath := flag.String("i", "./input.yaml", "the path of input parmas")
+	outputPath := flag.String("o", "./output.yaml", "the path of result")
+	flag.Parse()
+	err := cmd.RecoverKeysCmd(*inputPath, *outputPath)
 	if err != nil {
 		common.Logger.Errorf("%s", err)
 	}
-	fmt.Printf("Output the result to file `%s`\n", outputPath)
+	fmt.Printf("Output the result to file `%s`\n", *outputPath)
 }

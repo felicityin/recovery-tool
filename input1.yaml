@@ -1,0 +1,73 @@
+zip_path: ./test/archive_3vP59H1Er6q6HRFD5wQa8.zip
+valut_count: 2
+# Supported chain:
+# Bitcoin
+# Ethereum
+# Tron
+# BSC
+# Bitcoin Cash
+# Doge
+# Litecoin
+# Heco
+# Polygon
+# Arbitrum
+# Polkadot
+# Aptos
+# Solana
+# Base Chain
+chains: ["Bitcoin", "Ethereum", "Tron", "BSC", "Bitcoin Cash", "Doge", "Litecoin", "Heco", "Polygon", "Arbitrum", "Polkadot", "Aptos", "Solana", "Base Chain"]
+user_mnemonic: hope advice dry crystal sail limb zero cabbage beauty quote season inflict clip priority boil slight hunt rifle confirm dutch silly dad caught present
+ecies_private_key: 224b721ba660aafc15624d80b089d6a6585d19efbcb36717b09f2f94b8aafbe7
+rsa_private_key: |
+  -----BEGIN PRIVATE KEY-----
+  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
+  HMlVwOVO5+iTP0RbMM8bZunNrMFtDw==
+  -----END PRIVATE KEY-----
