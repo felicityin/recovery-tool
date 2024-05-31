@@ -3,7 +3,11 @@
   address: 1DPJbq64g2s3BDQTegufVyABnZ64ofBGPE
   private_key: 7f4cc6a5a20b37faa2e337747bb399c8914192dff2b6f3717c32aaf0fed06c2c
 - vault_index: 1
-  chain: BSC
+  chain: Doge
+  address: DLQQqAVggabKEA8Q987EPqrinT9sidYD7v
+  private_key: 823ede8e7c305680a2d9d0283a8bab4e7aa48727b990a122e26d730f1252e3cb
+- vault_index: 1
+  chain: Arbitrum
   address: 0xa26BD1402A25d5c08aAB137f8d6aFbC92e4f4253
   private_key: cbc990db5c7631d0b831913d8d805259773d171ff5eb587a095d0d2d97916cdf
 - vault_index: 1
@@ -75,7 +79,7 @@
   address: 0x9fC6Ee89012bC1E43a66E7BB4BE982D1D2eF81f7
   private_key: f084a1ea476a6a4ce93107f6b1b78a6dc25d65a902d388a057df0323ee97a4e3
 - vault_index: 2
-  chain: Ethereum
+  chain: Base Chain
   address: 0x9fC6Ee89012bC1E43a66E7BB4BE982D1D2eF81f7
   private_key: f084a1ea476a6a4ce93107f6b1b78a6dc25d65a902d388a057df0323ee97a4e3
 - vault_index: 2
