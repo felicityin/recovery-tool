@@ -1,18 +1,19 @@
 package ckd
 
 import (
-	"crypto/elliptic"
-	"crypto/hmac"
-	"crypto/sha512"
 	"errors"
 	"fmt"
 	"math/big"
+
+	"crypto/elliptic"
+	"crypto/hmac"
+	"crypto/sha512"
+
+	"recovery-tool/crypto"
 	"strconv"
 	"strings"
 
 	"github.com/decred/dcrd/dcrec/edwards/v2"
-
-	"recovery-tool/crypto"
 )
 
 func DeriveEddsaChildPrivKey(
@@ -155,19 +156,23 @@ func DeriveChildKeyD(index uint32, harden bool, pk *ExtendedKeyD, curve elliptic
 
 	if ilNum.Cmp(curve.Params().N) >= 0 || ilNum.Sign() == 0 {
 		// falling outside of the valid range for curve private keys
+		// common.Logger.Error("error deriving child key")
 		return nil, nil, errors.New("invalid derived key")
 	}
 
 	deltaG := crypto.ScalarBaseMult(curve, ilNum)
 	if deltaG.X().Sign() == 0 || deltaG.Y().Sign() == 0 {
+		// common.Logger.Error("error invalid child")
 		return nil, nil, errors.New("invalid child")
 	}
 	childCryptoPk, err := pk.PublicKey.Add(deltaG)
 	if err != nil {
+		// common.Logger.Error("error adding delta G to parent key")
 		return nil, nil, err
 	}
 	deduceCryptoPk, err := pk.DeducePubKey.Add(deltaG)
 	if err != nil {
+		// common.Logger.Error("error adding delta G to parent key")
 		return nil, nil, err
 	}
 
@@ -250,19 +255,23 @@ func DeriveChildPubKeyD(index uint32, pk *ExtendedKeyD, curve elliptic.Curve) (*
 
 	if ilNum.Cmp(curve.Params().N) >= 0 || ilNum.Sign() == 0 {
 		// falling outside of the valid range for curve private keys
+		// common.Logger.Error("error deriving child key")
 		return nil, nil, errors.New("invalid derived key")
 	}
 
 	deltaG := crypto.ScalarBaseMult(curve, ilNum)
 	if deltaG.X().Sign() == 0 || deltaG.Y().Sign() == 0 {
+		// common.Logger.Error("error invalid child")
 		return nil, nil, errors.New("invalid child")
 	}
 	childCryptoPk, err := pk.PublicKey.Add(deltaG)
 	if err != nil {
+		// common.Logger.Error("error adding delta G to parent key")
 		return nil, nil, err
 	}
 	deduceChildCryptoPk, err := pk.DeducePubKey.Add(deltaG)
 	if err != nil {
+		// common.Logger.Error("error adding delta G to parent key")
 		return nil, nil, err
 	}
 
