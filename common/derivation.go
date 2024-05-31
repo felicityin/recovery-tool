@@ -19,16 +19,17 @@ type RecoveryData struct {
 }
 
 type RootKeys struct {
-	HbcShare0 *RootKey
-	HbcShare1 *RootKey
-	UsrShare  *RootKey
-	PubKey    *crypto.ECPoint
+	HbcShare0   *RootKey
+	HbcShare1   *RootKey
+	UsrShare    *RootKey
+	EddsaPubKey *crypto.ECPoint
 }
 
 type RootKey struct {
-	PrivKey   *big.Int
-	PubKey    *crypto.ECPoint
-	ChainCode []byte
+	PrivKey     *big.Int
+	EcdsaPubKey *crypto.ECPoint
+	EddsaPubKey *crypto.ECPoint
+	ChainCode   []byte
 }
 
 func DeriveChild(params *RootKeys, hdPath string, coin int) (*big.Int, string, error) {
@@ -46,22 +47,25 @@ func DeriveChild(params *RootKeys, hdPath string, coin int) (*big.Int, string, e
 }
 
 func DerivePrivKey(params *RootKeys, hdPath string, coin int) (*big.Int, error) {
-	hbcPrivKey0, n, err := deriveChildPrivKey(params.HbcShare0, hdPath, params.PubKey, coin)
+	hbcPrivKey0, n, err := deriveChildPrivKey(params.HbcShare0, hdPath, params.EddsaPubKey, coin)
 	if err != nil {
+		Logger.Errorf("deriveChildPrivKey 0 err: %s", err)
 		return nil, err
 	}
 
-	hbcPrivKey1, _, err := deriveChildPrivKey(params.HbcShare1, hdPath, params.PubKey, coin)
+	hbcPrivKey1, _, err := deriveChildPrivKey(params.HbcShare1, hdPath, params.EddsaPubKey, coin)
 	if err != nil {
+		Logger.Errorf("deriveChildPrivKey 1 err: %s", err)
 		return nil, err
 	}
 
-	userPrivKey, _, err := deriveChildPrivKey(params.UsrShare, hdPath, params.PubKey, coin)
+	userPrivKey, _, err := deriveChildPrivKey(params.UsrShare, hdPath, params.EddsaPubKey, coin)
 	if err != nil {
+		Logger.Errorf("deriveChildPrivKey 2 err: %s", err)
 		return nil, err
 	}
 
-	privateKey := hbcPrivKey0
+	privateKey := new(big.Int).SetBytes(hbcPrivKey0.Bytes())
 
 	privateKey.Add(privateKey, hbcPrivKey1)
 	privateKey.Mod(privateKey, n)
@@ -139,10 +143,10 @@ func deriveChildPrivKey(key *RootKey, hdPath string, deducePubKey *crypto.ECPoin
 
 	if isEddsaCoin(coin) {
 		n = edwards.Edwards().Params().N
-		childPrivateKeySlice, _, err = DeriveEddsaChildPrivKey(privKeyBytes, key.ChainCode, key.PubKey, deducePubKey, hdPath)
+		childPrivateKeySlice, _, err = DeriveEddsaChildPrivKey(privKeyBytes, key.ChainCode, key.EddsaPubKey, deducePubKey, hdPath)
 	} else {
 		n = btcec.S256().Params().N
-		childPrivateKeySlice, _, err = DeriveEcdsaChildPrivKey(privKeyBytes, key.ChainCode, key.PubKey, hdPath)
+		childPrivateKeySlice, _, err = DeriveEcdsaChildPrivKey(privKeyBytes, key.ChainCode, key.EcdsaPubKey, hdPath)
 	}
 	if err != nil {
 		return nil, nil, err
@@ -174,7 +178,7 @@ func DeriveEddsaChildPrivKey(
 ) (childPrivKey [32]byte, childPubKey []byte, err error) {
 	extendedKey := ckd.NewExtendKeyD(prByte, pubKey, deducePubKey, 0, 0, chainCodeByte)
 
-	childPrivKey, childPubKey, err = ckd.DerivePrivateKeyForPathD(extendedKey, path, pubKey.Curve())
+	childPrivKey, childPubKey, err = ckd.DerivePrivateKeyForPathD(extendedKey, path, edwards.Edwards())
 	if err != nil {
 		return childPrivKey, nil, fmt.Errorf("derive child private err: %s", err.Error())
 	}

@@ -40,16 +40,16 @@
   private_key: bef7e9b1b9bc51d6462f7ce207ceac3438e9768a585da166511771f43735ea81
 - vault_index: 1
   chain: Polkadot
-  address: 13GYH7z9MFWNk4KTupc82NYXEAStcreK6xwQ8hR97edwocFB
-  private_key: 0c4417fae8c9c66de1b6027de257019d212a2a52c987beaf1f997c943332ad3f
+  address: 14tJHeLYKP3WG6hpi431e9MyuntQPXVVipQ1uv1AksbnkmtN
+  private_key: 0d9e11aeaa5d1f00565386799fa6e04e51c3b8087113e972d0dfc4bcc26ad9dc
 - vault_index: 1
   chain: Aptos
-  address: 0xb6dfbfde05a44102d3839d30a7a681b43d0b83e0afb79c81a75642d49eb40ff1
-  private_key: 011894861942a81e7bdb73f04632f4287a24d404e5e07f688d4dd2c101bee087
+  address: 0xc1044f9290dd287b6824842953b2b25efb3edc02d695b2f267e59cab248437c9
+  private_key: 0f2020d5f3ff4a08919d6e5f9058c47946dffaa620ea10e0d884c078dfa6ba23
 - vault_index: 1
   chain: Solana
-  address: GQyzTgiX35LLoHpvP47SK6xHEEkzeArbBDMJpSXuQJYq
-  private_key: 0504fa1b354a2bfba841680534199f03aac750634380e8237b34ac01485ffa3b
+  address: BqeEJ7skQJ32QsYVWs9m7ZUvhCWB6RUiz7k9L77xHScm
+  private_key: 078fe2333b309a95f8bc59f6e03a10c4b7b51f3e12b7ccd4a62c41363a08437a
 - vault_index: 1
   chain: Base Chain
   address: 0xA209798360bAbfe34EE6426c5877D08c9301376B
