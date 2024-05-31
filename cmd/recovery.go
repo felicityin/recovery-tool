@@ -14,6 +14,7 @@ import (
 	"math/big"
 	"recovery-tool/common"
 	"recovery-tool/crypto"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -444,6 +445,12 @@ func concurrentDeriveChilds(vaultCount int, chains []string, rootKeys *common.Ro
 	if pError != nil {
 		return nil, pError
 	}
+
+	sortByVaultIndex := func(i, j int) bool {
+		return deriveResult[i].VaultIndex < deriveResult[j].VaultIndex
+	}
+
+	sort.Slice(deriveResult, sortByVaultIndex)
 
 	return deriveResult, nil
 }
