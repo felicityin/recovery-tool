@@ -6,9 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/alecthomas/gometalinter/_linters/src/gopkg.in/yaml.v2"
-	"github.com/btcsuite/btcd/btcec"
-	ecies "github.com/ecies/go/v2"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -17,6 +14,11 @@ import (
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/HcashOrg/hcd/dcrec/edwards"
+	"github.com/alecthomas/gometalinter/_linters/src/gopkg.in/yaml.v2"
+	"github.com/btcsuite/btcd/btcec"
+	ecies "github.com/ecies/go/v2"
 )
 
 const (
@@ -82,26 +84,23 @@ func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
 		return nil, err
 	}
 
-	userPubKey := crypto.ScalarBaseMult(btcec.S256(), parsed.UserPrivKeyScalar)
-
-	pubKey, err := hbcPrivs[0].PubKey.Add(hbcPrivs[1].PubKey)
-	if err != nil {
-		return nil, err
-	}
-	pubKey, err = pubKey.Add(userPubKey)
-	if err != nil {
-		return nil, err
-	}
+	eddsaPrivKey := new(big.Int).SetBytes(hbcPrivs[0].PrivKey.Bytes())
+	eddsaPrivKey.Add(eddsaPrivKey, hbcPrivs[1].PrivKey)
+	eddsaPrivKey.Mod(eddsaPrivKey, edwards.Edwards().N)
+	eddsaPrivKey.Add(eddsaPrivKey, parsed.UserPrivKeyScalar)
+	eddsaPrivKey.Mod(eddsaPrivKey, edwards.Edwards().N)
 
 	privs := &common.RootKeys{
 		HbcShare0: hbcPrivs[0],
 		HbcShare1: hbcPrivs[1],
 		UsrShare: &common.RootKey{
-			PrivKey:   parsed.UserPrivKeyScalar,
-			PubKey:    userPubKey,
-			ChainCode: parsed.UserChainCode[:],
+			PrivKey:     parsed.UserPrivKeyScalar,
+			EcdsaPubKey: crypto.ScalarBaseMult(crypto.S256(), parsed.UserPrivKeyScalar),
+			EddsaPubKey: crypto.ScalarBaseMult(crypto.Edwards(), parsed.UserPrivKeyScalar),
+			ChainCode:   parsed.UserChainCode[:],
 		},
-		PubKey: pubKey,
+		// EddsaPubKey: pubKey,
+		EddsaPubKey: crypto.ScalarBaseMult(crypto.Edwards(), eddsaPrivKey),
 	}
 
 	keys, err := concurrentDeriveChilds(params.VaultCount, params.Chains, privs)
@@ -341,9 +340,10 @@ func decryptHbcPriv(
 	privateKey := new(big.Int).SetBytes(decryptedPrivKey)
 
 	return &common.RootKey{
-		PrivKey:   privateKey,
-		PubKey:    crypto.ScalarBaseMult(btcec.S256(), privateKey),
-		ChainCode: decryptedChainCode,
+		PrivKey:     privateKey,
+		EcdsaPubKey: crypto.ScalarBaseMult(crypto.S256(), privateKey),
+		EddsaPubKey: crypto.ScalarBaseMult(crypto.Edwards(), privateKey),
+		ChainCode:   decryptedChainCode,
 	}, nil
 }
 
@@ -354,6 +354,7 @@ func deriveChilds(vaultCount int, chains []string, rootKeys *common.RootKeys) ([
 		for _, chainName := range chains {
 			coinInfo, ok := common.ChainInfos[chainName]
 			if !ok {
+				common.Logger.Errorf("unkonw chain: %s", chainName)
 				return nil, fmt.Errorf("unkonw chain: %s", chainName)
 			}
 
