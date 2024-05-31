@@ -347,13 +347,18 @@ func decryptHbcPriv(
 	}, nil
 }
 
-func deriveChilds(vaultCount int, coinType []int, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
+func deriveChilds(vaultCount int, chains []string, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
 	var deriveResult []*DeriveResult
 
 	for vaultIndex := 0; vaultIndex < vaultCount; vaultIndex++ {
-		for _, coin := range coinType {
-			hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coin) // Only support asset wallet for now
-			privKey, address, err := common.DeriveChild(rootKeys, hdPath, coin)
+		for _, chainName := range chains {
+			coinInfo, ok := common.ChainInfos[chainName]
+			if !ok {
+				return nil, fmt.Errorf("unkonw chain: %s", chainName)
+			}
+
+			hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coinInfo.CoinType) // Only support asset wallet for now
+			privKey, address, err := common.DeriveChild(rootKeys, hdPath, int(coinInfo.CoinType))
 			if err != nil {
 				return nil, fmt.Errorf("derive child failed, err: %s", err.Error())
 			}
@@ -363,7 +368,7 @@ func deriveChilds(vaultCount int, coinType []int, rootKeys *common.RootKeys) ([]
 
 			deriveResult = append(deriveResult, &DeriveResult{
 				VaultIndex: vaultIndex + 1,
-				Chain:      common.SwitchCoin(uint32(coin)),
+				Chain:      chainName,
 				Address:    address,
 				PrivKey:    hex.EncodeToString(privKeyBytes),
 			})
