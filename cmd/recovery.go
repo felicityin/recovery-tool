@@ -10,11 +10,12 @@ import (
 	"github.com/btcsuite/btcd/btcec"
 	ecies "github.com/ecies/go/v2"
 	"io/ioutil"
+	"math"
 	"math/big"
-	"strings"
-
 	"recovery-tool/common"
 	"recovery-tool/crypto"
+	"strings"
+	"sync"
 )
 
 const (
@@ -102,7 +103,7 @@ func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
 		PubKey: pubKey,
 	}
 
-	keys, err := deriveChilds2(params.VaultCount, params.Chains, privs)
+	keys, err := concurrentDeriveChilds(params.VaultCount, params.Chains, privs)
 	if err != nil {
 		common.Logger.Errorf("derive childs failed: %s", err)
 		return nil, err
@@ -396,5 +397,78 @@ func deriveChilds2(vaultCount int, chains []string, rootKeys *common.RootKeys) (
 		}
 	}
 
+	return deriveResult, nil
+}
+
+func concurrentDeriveChilds(vaultCount int, chains []string, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
+	deriveResult := make([]*DeriveResult, 0)
+
+	var lock sync.Mutex
+
+	var pError error
+
+	chainTotal := len(chains)
+	maxThread := 20
+	currentThread := 0
+	for i := 0; i <= int(math.Ceil(float64(chainTotal)/float64(maxThread))); i++ {
+		wg := &sync.WaitGroup{}
+		for j := 0; j < maxThread; j++ {
+			if currentThread >= chainTotal {
+				break
+			}
+
+			chainName := chains[currentThread]
+
+			wg.Add(1)
+			go func(chainName string) {
+				defer wg.Done()
+
+				vaultDeriveResult, err := deriveVaultChild(vaultCount, chainName, rootKeys)
+				if err != nil {
+					pError = err
+					return
+				}
+
+				lock.Lock()
+				deriveResult = append(deriveResult, vaultDeriveResult...)
+				lock.Unlock()
+
+			}(chainName)
+
+			currentThread++
+		}
+
+		wg.Wait()
+	}
+
+	if pError != nil {
+		return nil, pError
+	}
+
+	return deriveResult, nil
+}
+
+func deriveVaultChild(vaultCount int, chainName string, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
+	deriveResult := make([]*DeriveResult, 0)
+	coinInfo, _ := common.ChainInfos[chainName]
+
+	for vaultIndex := 0; vaultIndex < vaultCount; vaultIndex++ {
+		hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coinInfo.CoinType) // Only support asset wallet for now
+		privKey, address, err := common.DeriveChild(rootKeys, hdPath, int(coinInfo.CoinType))
+		if err != nil {
+			return nil, fmt.Errorf("derive child failed, err: %s", err.Error())
+		}
+
+		var buf [32]byte
+		privKeyBytes := privKey.FillBytes(buf[:])
+
+		deriveResult = append(deriveResult, &DeriveResult{
+			VaultIndex: vaultIndex + 1,
+			Chain:      chainName,
+			Address:    address,
+			PrivKey:    hex.EncodeToString(privKeyBytes),
+		})
+
+	}
 	return deriveResult, nil
 }

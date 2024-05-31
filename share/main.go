@@ -51,12 +51,6 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 		}
 	}
 
-	fmt.Printf("zipPath: %s \n", zipPath)
-	fmt.Printf("userMnemonic: %s \n", userMnemonic)
-	fmt.Printf("eciesPrivKey: %s \n", eciesPrivKey)
-	fmt.Printf("rsaPrivKeyPath: %s \n", rsaPrivKeyPath)
-	fmt.Printf("vaultCount: %s \n", vaultCount)
-	fmt.Printf("chains: %s \n", chains)
 	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
 	if err != nil {
 		return C.RSResult{
