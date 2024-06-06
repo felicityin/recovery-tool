@@ -2,6 +2,7 @@ package code
 
 import (
 	"fmt"
+	"strings"
 )
 
 var (
@@ -17,12 +18,20 @@ var (
 	EciesDecryptBackupDataErr = "507" //Ecies解密备份数据失败
 	DeriveChildPrivErr        = "508" //子私钥推导失败
 	DeriveChildAddressErr     = "509" //地址推导失败
+	MnemonicNot24Words        = "510"
+	ChainNameNotEmpty         = "511"
+	VaultCountErr             = "512"
+	ChainParamErr             = "513"
+	EciesKeyNotEmpty          = "514"
+	FileFormatErr             = "515"
+	VaultIndexParamErr        = "516"
+	RSAKeyNotEmpty            = "517"
 )
 
 var I18nMessage = map[string]map[string]string{
 	"en": {
 		"fail_prefix":             "Recovery failed: ",
-		"succ_prefix":             "Recovery Successful",
+		"succ_prefix":             "Recovery successful",
 		ParamErr:                  "Parameter error.",
 		SystemErr:                 "System error.",
 		FileNotFound:              "File not found.",
@@ -34,6 +43,14 @@ var I18nMessage = map[string]map[string]string{
 		EciesDecryptBackupDataErr: "ECIES decryption of backup data failed.",
 		DeriveChildPrivErr:        "Sub-private key derivation failed.",
 		DeriveChildAddressErr:     "Address derivation failed.",
+		MnemonicNot24Words:        "Mnemonic must be 24 words.",
+		ChainNameNotEmpty:         "Chain name cannot be empty.",
+		VaultCountErr:             "Wallet quantity must be greater or equal than 1.",
+		ChainParamErr:             "Chain parameter error",
+		EciesKeyNotEmpty:          "ECIES key cannot be empty.",
+		RSAKeyNotEmpty:            "RSA key cannot be empty.",
+		FileFormatErr:             "File format error.",
+		VaultIndexParamErr:        "Vault Index param error.",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -49,10 +66,18 @@ var I18nMessage = map[string]map[string]string{
 		EciesDecryptBackupDataErr: "ECIES解密备份数据失败",
 		DeriveChildPrivErr:        "子私钥推导失败",
 		DeriveChildAddressErr:     "地址推导失败",
+		MnemonicNot24Words:        "助记词必须为24个单词",
+		ChainNameNotEmpty:         "链名不能为空",
+		VaultCountErr:             "钱包数量必须大于等于1",
+		ChainParamErr:             "链 参数错误",
+		EciesKeyNotEmpty:          "ECIES 密钥不能为空",
+		RSAKeyNotEmpty:            "RSA 密钥不能为空",
+		FileFormatErr:             "文件格式错误",
+		VaultIndexParamErr:        "钱包数量 参数错误",
 	},
 }
 
-func GetMessage(language string, code string) string {
+func GetMessage(language string, code string, arg ...string) string {
 	info, ok := I18nMessage[language]
 	if !ok {
 		info = I18nMessage["en"]
@@ -63,7 +88,21 @@ func GetMessage(language string, code string) string {
 		message = info[SystemErr]
 	}
 	if code != Success {
-		return fmt.Sprintf("%s%s", info["fail_prefix"], message)
+		return fmt.Sprintf("%s%s%s", info["fail_prefix"], strings.Join(arg, ""), message)
 	}
-	return fmt.Sprintf("%s%s", info["succ_prefix"], message)
+	return fmt.Sprintf("%s", info["succ_prefix"])
+}
+
+func ParamErrorMsg(language, code string, arg ...string) string {
+	info, ok := I18nMessage[language]
+	if !ok {
+		info = I18nMessage["en"]
+	}
+
+	var message string
+	if message, ok = info[code]; !ok {
+		message = info[SystemErr]
+	}
+
+	return fmt.Sprintf("%s%s", info["fail_prefix"], fmt.Sprintf(message, arg))
 }

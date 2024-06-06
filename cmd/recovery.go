@@ -71,7 +71,7 @@ func RecoverKeysCmd(paramsPath string, outputPath string) error {
 
 func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
 	if err := checkParams(params); err != nil {
-		return nil, code.NewI18nError(code.ParamErr, err.Error())
+		return nil, err
 	}
 
 	parsed, err := parseParams(params)
@@ -129,38 +129,38 @@ func loadRecoveryParams(path string) RecoveryInput {
 
 func checkParams(params RecoveryInput) (err error) {
 	if len(params.ZipPath) <= 0 {
-		return fmt.Errorf("zip_path cannot be empty")
+		return code.NewI18nError(code.ParamErr, "SecretKey zip file cannot be empty")
 	}
 
 	userMnemonics := strings.Split(params.UserMnemonic, " ")
 	if len(userMnemonics) != 24 {
-		return fmt.Errorf("mnemonic word not 24 words")
+		return code.NewI18nError(code.MnemonicNot24Words, "mnemonic word not 24 words")
 	}
 	for i, word := range userMnemonics {
 		userMnemonics[i] = strings.TrimSpace(word)
 	}
 
 	if len(params.EciesPrivKey) <= 0 {
-		return fmt.Errorf("ECIES key cannot be empty")
+		return code.NewI18nError(code.EciesKeyNotEmpty, "ECIES key cannot be empty")
 	}
 
 	if len(params.RsaPrivKey) <= 0 {
-		return fmt.Errorf("RSA key cannot be empty")
+		return code.NewI18nError(code.RSAKeyNotEmpty, "RSA key cannot be empty")
 	}
 
 	if params.VaultCount <= 0 {
-		return fmt.Errorf("VaultCount must > 1")
+		return code.NewI18nError(code.VaultCountErr, "VaultCount must > 1")
 	}
 
-	if len(params.CoinType) <= 0 && len(params.Chains) <= 0 {
-		return fmt.Errorf("coin_type and chains cannot be empty")
+	if len(params.Chains) <= 0 {
+		return code.NewI18nError(code.ChainNameNotEmpty, "chain name cannot be empty")
 	}
 
 	if len(params.Chains) > 0 {
 		chainMap := make(map[string]struct{})
 		for _, chainName := range params.Chains {
 			if _, ok := common.ChainInfos[chainName]; !ok {
-				return fmt.Errorf("unsupported chain: %s", chainName)
+				return code.NewI18nError(code.ChainParamErr, fmt.Sprintf("unsupported chain: %s", chainName))
 			}
 			chainMap[chainName] = struct{}{}
 		}
@@ -245,7 +245,7 @@ func findHbcPrivs(
 ) ([]*common.RootKey, error) {
 	zf, err := zip.OpenReader(zipPath)
 	if err != nil {
-		return nil, err
+		return nil, code.NewI18nError(code.FileFormatErr, "zip file format error")
 	}
 	defer zf.Close()
 

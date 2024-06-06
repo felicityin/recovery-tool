@@ -3,7 +3,6 @@ package main
 //#include "file.h"
 import "C"
 
-import "C"
 import (
 	"encoding/json"
 	"fmt"
@@ -47,7 +46,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(code.GetMessage(language, code.ParamErr)),
+			errMsg: C.CString(code.GetMessage(language, code.FileNotFound, "RSA")),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -101,12 +100,12 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 //func GoRecoveryTest(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains, language string) (err error) {
 //	vaultCountInt, err := strconv.Atoi(vaultCount)
 //	if err != nil {
-//		return err
+//		return errors.New(code.ParamErrorMsg(language, code.VaultIndexParamErr))
 //	}
 //
 //	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
 //	if err != nil {
-//		return err
+//		return errors.New(code.GetMessage(language, code.FileNotFound, "RSA"))
 //	}
 //
 //	chainList := strings.Split(chains, ",")
@@ -128,8 +127,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 //		} else {
 //			errMsg = err.Error()
 //		}
-//		fmt.Printf("errMsg: %s", errMsg)
-//		return nil
+//		return errors.New(errMsg)
 //	}
 //
 //	resBytes, _ := json.Marshal(recoverResult)
