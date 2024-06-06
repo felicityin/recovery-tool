@@ -3,12 +3,14 @@ package main
 //#include "file.h"
 import "C"
 
+import "C"
 import (
 	"encoding/json"
 	"fmt"
 	"os"
 	"recovery-tool/cmd"
 	"recovery-tool/common"
+	"recovery-tool/common/code"
 	"strconv"
 	"strings"
 )
@@ -41,11 +43,11 @@ func GetChainList() *C.char {
 }
 
 //export GoRecovery
-func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains string) C.RSResult {
+func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains, language string) C.RSResult {
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString("vaultCount must be a number"),
+			errMsg: C.CString(code.GetMessage(language, code.ParamErr)),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -54,7 +56,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(fmt.Sprintf("RSA file read failed: %s", err.Error())),
+			errMsg: C.CString(fmt.Sprintf("RSA %s", code.GetMessage(language, code.FileNotFound))),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -72,8 +74,15 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 
 	recoverResult, err := cmd.RecoverKeys(input)
 	if err != nil {
+		var errMsg string
+		i18nErr, ok := err.(*code.I18nError)
+		if ok {
+			errMsg = code.GetMessage(language, i18nErr.Code)
+		} else {
+			errMsg = err.Error()
+		}
 		return C.RSResult{
-			errMsg: C.CString(fmt.Sprintf("Recover failed: %s", err.Error())),
+			errMsg: C.CString(errMsg),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -81,14 +90,15 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 
 	resBytes, _ := json.Marshal(recoverResult)
 	data := string(resBytes)
+	msg := code.GetMessage(language, code.Success)
 	return C.RSResult{
-		errMsg: C.CString(""),
+		errMsg: C.CString(msg),
 		data:   C.CString(data),
 		ok:     C.TRUE,
 	}
 }
 
-//func GoRecoveryTest(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains string) (err error) {
+//func GoRecoveryTest(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains, language string) (err error) {
 //	vaultCountInt, err := strconv.Atoi(vaultCount)
 //	if err != nil {
 //		return err
@@ -111,7 +121,15 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 //
 //	recoverResult, err := cmd.RecoverKeys(input)
 //	if err != nil {
-//		return err
+//		var errMsg string
+//		i18nErr, ok := err.(*code.I18nError)
+//		if ok {
+//			errMsg = code.GetMessage(language, i18nErr.Code)
+//		} else {
+//			errMsg = err.Error()
+//		}
+//		fmt.Printf("errMsg: %s", errMsg)
+//		return nil
 //	}
 //
 //	resBytes, _ := json.Marshal(recoverResult)
@@ -121,5 +139,4 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 //}
 
 func main() {
-
 }

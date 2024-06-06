@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/big"
+	"recovery-tool/common/code"
 	"strings"
 
 	"github.com/HcashOrg/hcd/dcrec/edwards"
@@ -70,7 +71,7 @@ func RecoverKeysCmd(paramsPath string, outputPath string) error {
 
 func RecoverKeys(params RecoveryInput) ([]*DeriveResult, error) {
 	if err := checkParams(params); err != nil {
-		return nil, err
+		return nil, code.NewI18nError(code.ParamErr, err.Error())
 	}
 
 	parsed, err := parseParams(params)
@@ -179,7 +180,7 @@ func parseParams(params RecoveryInput) (*parsedParams, error) {
 	userPrivKey, userChainCode, err := common.CalcMasterPriv(params.UserMnemonic)
 	if err != nil {
 		common.Logger.Errorf("calc user priv infos failed: %s", err)
-		return nil, err
+		return nil, code.NewI18nError(code.MnemonicErr, err.Error())
 	}
 	usrPrivKeyScalar := new(big.Int).SetBytes(userPrivKey[:])
 	userPubKey := calcUserPubKey(usrPrivKeyScalar)
@@ -188,14 +189,14 @@ func parseParams(params RecoveryInput) (*parsedParams, error) {
 	eciesPrivKey, err := ecies.NewPrivateKeyFromHex(params.EciesPrivKey)
 	if err != nil {
 		common.Logger.Errorf("load ecies privkey failed: %s", err)
-		return nil, err
+		return nil, code.NewI18nError(code.EciesPrivKeyErr, err.Error())
 	}
 	common.Logger.Debugf("ecies privkey: %d", eciesPrivKey.D)
 
 	rsaPrivKey, err := crypto.ParseRsaPrivKey(params.RsaPrivKey)
 	if err != nil {
 		common.Logger.Errorf("parse rsa privkey failed: %s", err)
-		return nil, fmt.Errorf("RSA Private Key parse failed")
+		return nil, code.NewI18nError(code.RsaPrivKeyErr, err.Error())
 	}
 
 	common.Logger.Debugf("rsa privkey: %d, %d", rsaPrivKey.Primes[0], rsaPrivKey.Primes[1])
@@ -283,7 +284,7 @@ func findHbcPrivs(
 			return result, nil
 		}
 	}
-	return nil, fmt.Errorf("mnemonic and zip do not match")
+	return nil, code.NewI18nError(code.MnemonicNotMatch, "mnemonic and zip do not match")
 }
 
 func decryptUserPubKey(userPubKey string, eciesPrivKey *ecies.PrivateKey, rsaPrivKey *rsa.PrivateKey) (string, error) {
@@ -294,12 +295,12 @@ func decryptUserPubKey(userPubKey string, eciesPrivKey *ecies.PrivateKey, rsaPri
 
 	decryptedUsrPubKey, err := crypto.RsaDecryptOAEP(rsaPrivKey, userPubKeyBytes)
 	if err != nil {
-		return "", fmt.Errorf("rsa decrypt user pubkey error: %s", err.Error())
+		return "", code.NewI18nError(code.RSADecryptBackupDataErr, fmt.Sprintf("rsa decrypt user pubkey error: %s", err.Error()))
 	}
 
 	decryptedUsrPubKey, err = ecies.Decrypt(eciesPrivKey, decryptedUsrPubKey)
 	if err != nil {
-		return "", fmt.Errorf("ecies decrypt user pubkey error: %s", err.Error())
+		return "", code.NewI18nError(code.EciesDecryptBackupDataErr, fmt.Sprintf("ecies decrypt user pubkey error: %s", err.Error()))
 	}
 
 	return hex.EncodeToString(decryptedUsrPubKey), nil
@@ -321,20 +322,20 @@ func decryptHbcPriv(
 
 	decryptedPrivKey, err := crypto.RsaDecryptOAEP(rsaPrivKey, privKeyBytes)
 	if err != nil {
-		return nil, fmt.Errorf("rsa decode privkey failed: %s", err.Error())
+		return nil, code.NewI18nError(code.RSADecryptBackupDataErr, fmt.Sprintf("rsa decode privkey failed: %s", err.Error()))
 	}
 	decryptedChainCode, err := crypto.RsaDecryptOAEP(rsaPrivKey, chainCodeBytes)
 	if err != nil {
-		return nil, fmt.Errorf("rsa decode chaincode failed: %s", err.Error())
+		return nil, code.NewI18nError(code.RSADecryptBackupDataErr, fmt.Sprintf("rsa decode chaincode failed: %s", err.Error()))
 	}
 
 	decryptedPrivKey, err = ecies.Decrypt(eciesPrivKey, decryptedPrivKey)
 	if err != nil {
-		return nil, fmt.Errorf("ecies decode privkey failed: %s", err.Error())
+		return nil, code.NewI18nError(code.EciesDecryptBackupDataErr, fmt.Sprintf("ecies decode privkey failed: %s", err.Error()))
 	}
 	decryptedChainCode, err = ecies.Decrypt(eciesPrivKey, decryptedChainCode)
 	if err != nil {
-		return nil, fmt.Errorf("ecies decode chaincode failed: %s", err.Error())
+		return nil, code.NewI18nError(code.EciesDecryptBackupDataErr, fmt.Sprintf("ecies decode chaincode failed: %s", err.Error()))
 	}
 
 	privateKey := new(big.Int).SetBytes(decryptedPrivKey)
@@ -469,7 +470,7 @@ func deriveVaultChild(vaultCount int, chainName string, rootKeys *common.RootKey
 		hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coinInfo.CoinType) // Only support asset wallet for now
 		privKey, address, err := common.DeriveChild(rootKeys, hdPath, int(coinInfo.CoinType))
 		if err != nil {
-			return nil, fmt.Errorf("derive child failed, err: %s", err.Error())
+			return nil, err
 		}
 
 		var buf [32]byte

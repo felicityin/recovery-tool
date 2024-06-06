@@ -11,7 +11,7 @@ import (
 
 // must remove import "C"
 func TestGoRecoveryTest(t *testing.T) {
-	bytess, err := os.ReadFile("./input1.yaml")
+	bytess, err := os.ReadFile("../input1.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -27,5 +27,5 @@ func TestGoRecoveryTest(t *testing.T) {
 		chainStr += chainName + ","
 	}
 	chainStr = strings.TrimRight(chainStr, ",")
-	GoRecoveryTest(input.ZipPath, input.UserMnemonic, input.EciesPrivKey, "./test/private_f5a4b26f3c2231dec42ff8c4ade8530c.key", vaultCountStr, chainStr)
+	GoRecoveryTest(input.ZipPath, input.UserMnemonic, input.EciesPrivKey, "./test/RSAKet", vaultCountStr, chainStr, "zh")
 }

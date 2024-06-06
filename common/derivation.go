@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"math/big"
+	"recovery-tool/common/code"
 
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/decred/dcrd/dcrec/edwards/v2"
@@ -35,12 +36,12 @@ type RootKey struct {
 func DeriveChild(params *RootKeys, hdPath string, coin int) (*big.Int, string, error) {
 	privKey, err := DerivePrivKey(params, hdPath, coin)
 	if err != nil {
-		return nil, "", err
+		return nil, "", code.NewI18nError(code.DeriveChildPrivErr, err.Error())
 	}
 
 	address, err := DeriveAddress(privKey, hdPath, coin)
 	if err != nil {
-		return nil, "", err
+		return nil, "", code.NewI18nError(code.DeriveChildAddressErr, err.Error())
 	}
 
 	return privKey, address, nil
