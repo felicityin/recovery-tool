@@ -46,7 +46,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(code.GetMessage(language, code.FileNotFound, "RSA")),
+			errMsg: C.CString(code.GetMessage(language, code.VaultIndexParamErr, "RSA")),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -55,7 +55,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(fmt.Sprintf("RSA %s", code.GetMessage(language, code.FileNotFound))),
+			errMsg: C.CString(code.GetMessage(language, code.FileNotFound, "RSA")),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}

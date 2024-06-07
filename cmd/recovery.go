@@ -149,7 +149,7 @@ func checkParams(params RecoveryInput) (err error) {
 	}
 
 	if params.VaultCount <= 0 {
-		return code.NewI18nError(code.VaultCountErr, "VaultCount must > 1")
+		return code.NewI18nError(code.VaultCountErr, "VaultCount must >= 1")
 	}
 
 	if len(params.Chains) <= 0 {
@@ -290,7 +290,7 @@ func findHbcPrivs(
 func decryptUserPubKey(userPubKey string, eciesPrivKey *ecies.PrivateKey, rsaPrivKey *rsa.PrivateKey) (string, error) {
 	userPubKeyBytes, err := hex.DecodeString(userPubKey)
 	if err != nil {
-		return "", fmt.Errorf("hex decode user pubkey error: %s", err.Error())
+		return "", code.NewI18nError(code.FailedToParseDataErr, fmt.Sprintf("hex decode user pubkey error: %s", err.Error()))
 	}
 
 	decryptedUsrPubKey, err := crypto.RsaDecryptOAEP(rsaPrivKey, userPubKeyBytes)
