@@ -26,6 +26,7 @@ var (
 	FileFormatErr             = "515"
 	VaultIndexParamErr        = "516"
 	RSAKeyNotEmpty            = "517"
+	FailedToParseDataErr      = "518"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -51,6 +52,7 @@ var I18nMessage = map[string]map[string]string{
 		RSAKeyNotEmpty:            "RSA key should not be empty.",
 		FileFormatErr:             "File format error.",
 		VaultIndexParamErr:        "Vault Index param error.",
+		FailedToParseDataErr:      "Failed to parse data.",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -74,6 +76,7 @@ var I18nMessage = map[string]map[string]string{
 		RSAKeyNotEmpty:            "RSA 密钥不能为空",
 		FileFormatErr:             "文件格式错误",
 		VaultIndexParamErr:        "钱包数量 参数错误",
+		FailedToParseDataErr:      "解析数据失败",
 	},
 }
 

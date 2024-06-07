@@ -254,13 +254,13 @@ func findHbcPrivs(
 	for _, file := range zf.File {
 		fileBytes, err := common.ReadAll(file)
 		if err != nil {
-			return nil, err
+			return nil, code.NewI18nError(code.FileFormatErr, err.Error())
 		}
 
 		encrypted := encryptedTeam{}
 		err = json.Unmarshal(fileBytes, &encrypted)
 		if err != nil {
-			return nil, fmt.Errorf("unmarshal team failed: %s", err.Error())
+			return nil, code.NewI18nError(code.FailedToParseDataErr, fmt.Sprintf("unmarshal team failed: %s", err.Error()))
 		}
 
 		decryptedUsrPubKey, err := decryptUserPubKey(encrypted.UserPubKey, eciesPrivKey, rsaPrivKey)
@@ -313,11 +313,11 @@ func decryptHbcPriv(
 ) (*common.RootKey, error) {
 	privKeyBytes, err := hex.DecodeString(privKey)
 	if err != nil {
-		return nil, fmt.Errorf("hex decode privkey failed: %s", err.Error())
+		return nil, code.NewI18nError(code.FailedToParseDataErr, fmt.Sprintf("hex decode privkey failed: %s", err.Error()))
 	}
 	chainCodeBytes, err := hex.DecodeString(chainCode)
 	if err != nil {
-		return nil, fmt.Errorf("hex decode chaincode failed: %s", err.Error())
+		return nil, code.NewI18nError(code.FailedToParseDataErr, fmt.Sprintf("hex decode chaincode failed: %s", err.Error()))
 	}
 
 	decryptedPrivKey, err := crypto.RsaDecryptOAEP(rsaPrivKey, privKeyBytes)
