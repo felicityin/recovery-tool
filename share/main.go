@@ -35,10 +35,22 @@ func GetRSResult(s string) C.RSResult {
 	}
 }
 
-//export GetChainList
-func GetChainList() *C.char {
+//export GetChainList1
+func GetChainList1() *C.char {
 	chainList, _ := json.Marshal(common.ChainList)
-	return C.CString(string(chainList))
+	res := string(chainList)
+	return C.CString(res)
+}
+
+//export GetChainList
+func GetChainList() C.RSResult {
+	chainList, _ := json.Marshal(common.ChainList)
+	res := string(chainList)
+	return C.RSResult{
+		errMsg: C.CString(""),
+		data:   C.CString(res),
+		ok:     C.TRUE,
+	}
 }
 
 //export GoRecovery
