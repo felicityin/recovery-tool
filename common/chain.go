@@ -83,7 +83,7 @@ const (
 	BaseChain        = "Base Chain"
 )
 
-var ChainList = []Option{
+var ChainList = []*Option{
 	{
 		Name: BitcoinChain,
 		Val:  BitcoinChain,
