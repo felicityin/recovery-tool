@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/btcsuite/btcutil"
 	"io/ioutil"
 	"math/big"
 	"recovery-tool/common/code"
@@ -459,6 +460,19 @@ func concurrentDeriveChilds(vaultCount int, chains []string, rootKeys *common.Ro
 
 	sort.Slice(deriveResult, sortByVaultIndex)
 
+	vaultResult := make(map[int][]*DeriveResult)
+	for _, item := range deriveResult {
+		vaultResult[item.VaultIndex] = append(vaultResult[item.VaultIndex], item)
+	}
+
+	deriveResult = make([]*DeriveResult, 0)
+	for vaultIndex, _ := range vaultResult {
+		sort.Slice(vaultResult[vaultIndex], func(i, j int) bool {
+			return vaultResult[vaultIndex][i].Chain < vaultResult[vaultIndex][j].Chain
+		})
+		deriveResult = append(deriveResult, vaultResult[vaultIndex]...)
+	}
+
 	return deriveResult, nil
 }
 
@@ -480,9 +494,34 @@ func deriveVaultChild(vaultCount int, chainName string, rootKeys *common.RootKey
 			VaultIndex: vaultIndex + 1,
 			Chain:      chainName,
 			Address:    address,
-			PrivKey:    hex.EncodeToString(privKeyBytes),
+			PrivKey:    formatPrivKey(coinInfo.CoinType, privKeyBytes),
 		})
 
 	}
 	return deriveResult, nil
+}
+
+func formatPrivKey(coinType uint32, privKeyBytes []byte) string {
+	if coinType == common.BTC || coinType == common.LTC || coinType == common.DOGE || coinType == common.BCH {
+		wif := &btcutil.WIF{}
+		priv, _ := btcec.PrivKeyFromBytes(btcec.S256(), privKeyBytes)
+
+		switch coinType {
+		case common.BTC:
+			param := &common.BTCParams
+			wif, _ = btcutil.NewWIF(priv, param, true)
+		case common.DOGE:
+			param := &common.DOGEParams
+			wif, _ = btcutil.NewWIF(priv, param, true)
+		case common.LTC:
+			param := &common.LTCParams
+			wif, _ = btcutil.NewWIF(priv, param, true)
+		case common.BCH:
+			param := &common.BCHParams
+			wif, _ = btcutil.NewWIF(priv, param, true)
+		}
+		return wif.String()
+	}
+
+	return hex.EncodeToString(privKeyBytes)
 }
