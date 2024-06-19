@@ -83,6 +83,7 @@ extern __declspec(dllexport) int SumTest(GoInt a, GoInt b);
 extern __declspec(dllexport) RSResult GetRSResult(GoString s);
 extern __declspec(dllexport) char* GetChainList1();
 extern __declspec(dllexport) RSResult GetChainList();
+extern __declspec(dllexport) char* MacGetChainList();
 extern __declspec(dllexport) RSResult GoRecovery(GoString zipPath, GoString userMnemonic, GoString eciesPrivKey, GoString rsaPrivKeyPath, GoString vaultCount, GoString chains, GoString language);
 
 #ifdef __cplusplus

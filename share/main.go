@@ -53,6 +53,13 @@ func GetChainList() C.RSResult {
 	}
 }
 
+//export MacGetChainList
+func MacGetChainList() *C.char {
+	chainList, _ := json.Marshal(common.ChainList)
+	res := string(chainList)
+	return C.CString(res)
+}
+
 //export GoRecovery
 func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains, language string) C.RSResult {
 	vaultCountInt, err := strconv.Atoi(vaultCount)
