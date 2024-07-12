@@ -266,7 +266,6 @@ func findHbcPrivs(
 		}
 
 		decryptedUsrPubKey, err := decryptUserPubKey(encrypted.UserPubKey, eciesPrivKey, rsaPrivKey)
-		common.Logger.Debugf("decrypted user pubkey: %s", decryptedUsrPubKey)
 		if err != nil {
 			return nil, err
 		}
