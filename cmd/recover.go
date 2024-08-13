@@ -406,7 +406,10 @@ func concurrentDeriveChilds(vaultCount int, chains []string, rootKeys *common.Ro
 	}
 
 	deriveResult = make([]*DeriveResult, 0)
-	for vaultIndex, _ := range vaultResult {
+	for vaultIndex := 1; vaultIndex <= vaultCount; vaultIndex++ {
+		if len(vaultResult[vaultIndex]) <= 0 {
+			continue
+		}
 		sort.Slice(vaultResult[vaultIndex], func(i, j int) bool {
 			return vaultResult[vaultIndex][i].Chain < vaultResult[vaultIndex][j].Chain
 		})
