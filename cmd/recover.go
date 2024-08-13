@@ -7,21 +7,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"math/big"
-	"sort"
 	"strings"
-	"sync"
 
 	"github.com/HcashOrg/hcd/dcrec/edwards"
 	"github.com/alecthomas/gometalinter/_linters/src/gopkg.in/yaml.v2"
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil"
 	ecies "github.com/ecies/go/v2"
-
+	"math"
 	"recovery-tool/common"
 	"recovery-tool/common/code"
 	"recovery-tool/crypto"
+	"sort"
+	"sync"
 )
 
 const (
