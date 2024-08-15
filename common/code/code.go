@@ -123,6 +123,22 @@ func GetMessage(language string, code string, arg ...string) string {
 	return fmt.Sprintf("%s", info["succ_prefix"])
 }
 
+func GetMsg(language string, code string, arg ...string) string {
+	info, ok := I18nMessage[language]
+	if !ok {
+		info = I18nMessage["en"]
+	}
+
+	var message string
+	if message, ok = info[code]; !ok {
+		message = info[SystemErr]
+	}
+	if code != Success {
+		return message
+	}
+	return ""
+}
+
 func ParamErrorMsg(language, code string, arg ...string) string {
 	info, ok := I18nMessage[language]
 	if !ok {
