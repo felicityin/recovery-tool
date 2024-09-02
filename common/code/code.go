@@ -36,7 +36,6 @@ var (
 	SrcAccountNotFound     = "605"
 	DstAccountNotFound     = "606"
 	SrcCoinAccountNotFound = "607"
-	DstCoinAccountNotFound = "608"
 	AmountInvalid          = "609"
 	CoinUnsupported        = "610"
 	SolInsufficientFunds   = "611"
