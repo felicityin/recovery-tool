@@ -65,7 +65,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(code.GetMessage(language, code.VaultIndexParamErr, "RSA")),
+			errMsg: C.CString(code.GetMessage(language, code.VaultIndexParamErr)),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -124,7 +124,7 @@ func GoBalance(chain, url, addr, coinAddress, language string) C.RSResult {
 		var errMsg string
 		i18nErr, ok := err.(*code.I18nError)
 		if ok {
-			errMsg = code.GetMessage(language, i18nErr.Code)
+			errMsg = code.GetMsg(language, i18nErr.Code)
 		} else {
 			errMsg = err.Error()
 		}
@@ -150,7 +150,7 @@ func GoSign(chain, url, privkey, toAddr, amount, coinAddress, language string) C
 		var errMsg string
 		i18nErr, ok := err.(*code.I18nError)
 		if ok {
-			errMsg = code.GetMessage(language, i18nErr.Code)
+			errMsg = code.GetMsg(language, i18nErr.Code)
 		} else {
 			errMsg = err.Error()
 		}
@@ -176,7 +176,7 @@ func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language strin
 		var errMsg string
 		i18nErr, ok := err.(*code.I18nError)
 		if ok {
-			errMsg = code.GetMessage(language, i18nErr.Code)
+			errMsg = code.GetMsg(language, i18nErr.Code)
 		} else {
 			errMsg = err.Error()
 		}
@@ -193,6 +193,45 @@ func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language strin
 		ok:     C.TRUE,
 	}
 }
+
+//func GoRecoveryTest(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains, language string) (err error) {
+//	vaultCountInt, err := strconv.Atoi(vaultCount)
+//	if err != nil {
+//		return errors.New(code.ParamErrorMsg(language, code.VaultIndexParamErr))
+//	}
+//
+//	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
+//	if err != nil {
+//		return errors.New(code.GetMessage(language, code.FileNotFound, "RSA"))
+//	}
+//
+//	chainList := strings.Split(chains, ",")
+//	input := cmd.RecoveryInput{
+//		ZipPath:      zipPath,
+//		UserMnemonic: userMnemonic,
+//		EciesPrivKey: eciesPrivKey,
+//		RsaPrivKey:   string(rsaBytes),
+//		VaultCount:   vaultCountInt,
+//		Chains:       chainList,
+//	}
+//
+//	recoverResult, err := cmd.RecoverKeys(input)
+//	if err != nil {
+//		var errMsg string
+//		i18nErr, ok := err.(*code.I18nError)
+//		if ok {
+//			errMsg = code.GetMessage(language, i18nErr.Code)
+//		} else {
+//			errMsg = err.Error()
+//		}
+//		return errors.New(errMsg)
+//	}
+//
+//	resBytes, _ := json.Marshal(recoverResult)
+//	data := string(resBytes)
+//	fmt.Printf("data: %s", data)
+//	return nil
+//}
 
 func main() {
 }
