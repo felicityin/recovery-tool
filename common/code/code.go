@@ -121,9 +121,9 @@ var I18nMessage = map[string]map[string]string{
 		SrcCoinAccountNotFound: "发送代币地址不存在，请检查后重试",
 		AmountInvalid:          "请输入正确数量",
 		CoinUnsupported:        "该链暂不支持非主链币发送",
-		SolInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.00089608 sol）",
-		AptInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.002 apt）",
-		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot）",
+		SolInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.00089608 sol)",
+		AptInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.002 apt)",
+		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot)",
 		NetworkErr:             "网络错误，请稍后重试",
 	},
 }
