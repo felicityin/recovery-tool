@@ -68,7 +68,7 @@ func (c *Sol) GetAssociatedAddress(ownerAddres string, coinAddress string) (asso
 func (c *Sol) GetContractDecimals(coinAddress string) (decimals int64, err error) {
 	res, err := c.Client.GetTokenSupply(context.Background(), coinAddress)
 	if err != nil {
-		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return 0, err
 	}
 	return int64(res.Result.Value.Decimals), nil
@@ -88,7 +88,7 @@ func (c *Sol) GetTokenBalance(associatedAddress string) (decimals int, amount st
 			return 0, "0", d, nil
 		}
 		cm.Logger.Errorf("GetAccountInfoWithCfg: %s", err1.Error())
-		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 
@@ -128,7 +128,7 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 	blockHash, err := c.GetBlockHash()
 	if err != nil {
 		cm.Logger.Errorf("get block hash err: %s", err.Error())
-		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 
@@ -156,7 +156,7 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 		fromAssociatedAddress, err1 := c.GetAssociatedAddress(fromAddr, coinAddress)
 		if err1 != nil {
 			cm.Logger.Errorf("get from associated addr err: %s", err1.Error())
-			err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 			return
 		}
 		if fromAssociatedAddress == "" {
@@ -169,11 +169,7 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 		toAssociatedAddress, err1 := c.GetAssociatedAddress(toAddr, coinAddress)
 		if err1 != nil {
 			cm.Logger.Errorf("get to associated addr err: %s", err1.Error())
-			err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
-			return
-		}
-		if toAssociatedAddress == "" {
-			err = code.NewI18nError(code.DstCoinAccountNotFound, "The balance of the dst coin contract is 0")
+			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 			return
 		}
 		cm.Logger.Infof("to associated addr: %s", toAssociatedAddress)
@@ -186,7 +182,7 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 		decimals, err = c.GetContractDecimals(coinAddress)
 		if err != nil {
 			cm.Logger.Errorf("get decimals err: %s", err1.Error())
-			err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 			return
 		}
 		properties["decimals"] = fmt.Sprintf("%d", decimals)
@@ -249,14 +245,14 @@ func (c *Sol) GetBlockHash() (blockHash string, err error) {
 		res, err = c.Client.GetLatestBlockHash(context.Background())
 		if err != nil {
 			cm.Logger.Errorf("get block hash err: %s", err.Error())
-			err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 			return
 		}
 		lastValidBlockHeight := res.Result.Value.LastValidBlockHeight + 150
 		res2, err = c.Client.GetBlockHeight(context.Background())
 		if err != nil {
 			cm.Logger.Errorf("get block height err: %s", err.Error())
-			err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 			return
 		}
 		blockHeight := res2.Result

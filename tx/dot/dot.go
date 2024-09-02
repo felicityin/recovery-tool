@@ -133,7 +133,7 @@ func (c *Dot) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 	blockInfo, err := c.GetBlockInfo()
 	if err != nil {
 		common.Logger.Errorf("get block info err: %s", err.Error())
-		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 
@@ -146,7 +146,7 @@ func (c *Dot) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 	nonce, err := c.GetNonce(fromAddr)
 	if err != nil {
 		common.Logger.Errorf("get nonce err: %s", err.Error())
-		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 

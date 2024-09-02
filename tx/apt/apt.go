@@ -117,7 +117,7 @@ func (c *Apt) GetGasPrice() (gasPrice *big.Int, err error) {
 	res, err := c.Client.EstimateGasPrice(context.Background())
 	if err != nil {
 		common.Logger.Errorf("get gas price err: %s", err.Error())
-		return big.NewInt(0), code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		return big.NewInt(0), code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 	}
 	gasPrice = big.NewInt(int64(res))
 	return gasPrice, nil
@@ -167,14 +167,14 @@ func (c *Apt) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 		if strings.Contains(err.Error(), "account_not_found") {
 			return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
 		}
-		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 
 	gasLimit, gasPrice, _, err := c.GetGas()
 	if err != nil {
 		common.Logger.Errorf("get gas err: %s", err.Error())
-		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 
