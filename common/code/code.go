@@ -27,19 +27,20 @@ var (
 	VaultIndexParamErr        = "516"
 	RSAKeyNotEmpty            = "517"
 	FailedToParseDataErr      = "518"
-	PrivkeyInvalid            = "600"
-	DstAddrNotEmpty           = "601"
-	AmountInvalid             = "602"
-	CoinUnsupported           = "603"
-	AddrNotEmpty              = "604"
-	SolInsufficientFunds      = "605"
-	AptInsufficientFunds      = "606"
-	DotInsufficientFunds      = "607"
-	NetworkErr                = "608"
-	FromBalanceZero           = "609"
-	AccountNotFound           = "610"
-	InvalidToAddr             = "611"
-	InvalidPrivkey            = "612"
+
+	PrivkeyIsHex         = "600"
+	InvalidPrivkey       = "601"
+	DstAddrNotEmpty      = "602"
+	AddrNotEmpty         = "603"
+	InvalidToAddr        = "604"
+	AccountNotFound      = "605"
+	AmountInvalid        = "606"
+	CoinUnsupported      = "607"
+	SolInsufficientFunds = "608"
+	AptInsufficientFunds = "609"
+	DotInsufficientFunds = "610"
+	NetworkErr           = "611"
+	FromBalanceZero      = "612"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -66,19 +67,20 @@ var I18nMessage = map[string]map[string]string{
 		FileFormatErr:             "File format error.",
 		VaultIndexParamErr:        "Vault index param error.",
 		FailedToParseDataErr:      "Failed to parse backup data.",
-		PrivkeyInvalid:            "The private key should be in hexadecimal format",
-		DstAddrNotEmpty:           "The recipient's address cannot be empty",
-		AmountInvalid:             "Unable to convert transfer amount to decimal",
-		CoinUnsupported:           "This chain only supports main chain coins for now",
-		AddrNotEmpty:              "The address cannot be empty",
-		SolInsufficientFunds:      "Insufficient balance to pay for transaction fee. The max tx fee is 0.00089608 sol",
-		AptInsufficientFunds:      "Insufficient balance to pay for transaction fee. The max tx fee is 0.002 apt",
-		DotInsufficientFunds:      "Insufficient balance to pay for transaction fee. The max tx fee is 1 dot",
-		NetworkErr:                "Network error. Please retry later!",
-		FromBalanceZero:           "The balance of the coin contract is 0",
-		AccountNotFound:           "Account not found",
-		InvalidToAddr:             "Dest address is invalid",
-		InvalidPrivkey:            "Private key is invalid",
+
+		PrivkeyIsHex:         "The private key should be in hexadecimal format",
+		DstAddrNotEmpty:      "The recipient's address cannot be empty",
+		InvalidToAddr:        "Dest address is invalid",
+		InvalidPrivkey:       "Private key is invalid",
+		AmountInvalid:        "Unable to convert transfer amount to decimal",
+		CoinUnsupported:      "This chain only supports main chain coin for now",
+		AddrNotEmpty:         "The address cannot be empty",
+		SolInsufficientFunds: "Insufficient balance to pay for transaction fee. The max tx fee is 0.00089608 sol",
+		AptInsufficientFunds: "Insufficient balance to pay for transaction fee. The max tx fee is 0.002 apt",
+		DotInsufficientFunds: "Insufficient balance to pay for transaction fee. The max tx fee is 1 dot",
+		NetworkErr:           "Network error. Please retry later!",
+		FromBalanceZero:      "The balance of the coin contract is 0",
+		AccountNotFound:      "Account not found",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -103,19 +105,20 @@ var I18nMessage = map[string]map[string]string{
 		FileFormatErr:             "文件格式错误",
 		VaultIndexParamErr:        "钱包数量 参数错误",
 		FailedToParseDataErr:      "解析备份数据失败",
-		PrivkeyInvalid:            "私钥应该为 16 进制格式",
-		DstAddrNotEmpty:           "目标地址不能为空",
-		AmountInvalid:             "转账金额无法转换为小数",
-		CoinUnsupported:           "该链暂时只支持主链币",
-		AddrNotEmpty:              "地址不能为空",
-		SolInsufficientFunds:      "余额不足以支付交易手续费，最大交易手续费为 0.00089608 sol",
-		AptInsufficientFunds:      "余额不足以支付交易手续费，最大交易手续费为 0.002 apt",
-		DotInsufficientFunds:      "余额不足以支付交易手续费，最大交易手续费为 1 dot",
-		NetworkErr:                "网络错误，请重试",
-		FromBalanceZero:           "合约币余额为 0",
-		AccountNotFound:           "账户不存在",
-		InvalidToAddr:             "目标地址格式不正确",
-		InvalidPrivkey:            "私钥格式不正确",
+
+		PrivkeyIsHex:         "私钥应该为 16 进制格式",
+		InvalidPrivkey:       "私钥格式不正确",
+		DstAddrNotEmpty:      "目标地址不能为空",
+		InvalidToAddr:        "目标地址格式不正确",
+		AddrNotEmpty:         "地址不能为空",
+		AccountNotFound:      "账户不存在",
+		AmountInvalid:        "转账金额无法转换为小数",
+		CoinUnsupported:      "该链暂时只支持主链币",
+		SolInsufficientFunds: "余额不足以支付交易手续费，最大交易手续费为 0.00089608 sol",
+		AptInsufficientFunds: "余额不足以支付交易手续费，最大交易手续费为 0.002 apt",
+		DotInsufficientFunds: "余额不足以支付交易手续费，最大交易手续费为 1 dot",
+		NetworkErr:           "网络错误，请稍后重试",
+		FromBalanceZero:      "合约币余额为 0",
 	},
 }
 

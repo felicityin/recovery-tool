@@ -15,7 +15,7 @@ import (
 func Sign(chain, url, privkey, toAddr, amount, coinAddress string) (string, error) {
 	priv, err := hex.DecodeString(privkey)
 	if err != nil {
-		return "", code.NewI18nError(code.PrivkeyInvalid, "The private key should be in hexadecimal format")
+		return "", code.NewI18nError(code.PrivkeyIsHex, "The private key should be in hexadecimal format")
 	}
 
 	if toAddr == "" {
