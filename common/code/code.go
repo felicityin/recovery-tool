@@ -78,7 +78,6 @@ var I18nMessage = map[string]map[string]string{
 		DstAccountNotFound:     "The receiving account does not exist, please check and try again",
 		SrcAccountNotFound:     "The sending account does not exist, please check and try again",
 		SrcCoinAccountNotFound: "The sending token address does not exist, please check and try again.",
-		DstCoinAccountNotFound: "The receiving token address does not exist, please check and try again.",
 		AmountInvalid:          "Please enter the correct amount.",
 		CoinUnsupported:        "This chain does not support non-main chain currency.",
 		SolInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.00089608 sol).",
@@ -117,7 +116,6 @@ var I18nMessage = map[string]map[string]string{
 		DstAddrInvalid:         "接收地址格式不正确，请重新填写",
 		DstAccountNotFound:     "接收账户不存在，请检查后重试",
 		SrcAccountNotFound:     "发送账户不存在，请检查后重试",
-		DstCoinAccountNotFound: "接收代币地址不存在，请检查后重试",
 		SrcCoinAccountNotFound: "发送代币地址不存在，请检查后重试",
 		AmountInvalid:          "请输入正确数量",
 		CoinUnsupported:        "该链暂不支持非主链币发送",
@@ -141,7 +139,7 @@ func GetMessage(language string, code string, arg ...string) string {
 	if code != Success {
 		return fmt.Sprintf("%s%s%s", info["fail_prefix"], strings.Join(arg, ""), message)
 	}
-	return fmt.Sprintf("%s", info["succ_prefix"])
+	return info["succ_prefix"]
 }
 
 func GetMsg(language string, code string, arg ...string) string {
