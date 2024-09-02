@@ -36,6 +36,10 @@ var (
 	AptInsufficientFunds      = "606"
 	DotInsufficientFunds      = "607"
 	NetworkErr                = "608"
+	FromBalanceZero           = "609"
+	AccountNotFound           = "610"
+	InvalidToAddr             = "611"
+	InvalidPrivkey            = "612"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -70,7 +74,11 @@ var I18nMessage = map[string]map[string]string{
 		SolInsufficientFunds:      "Insufficient balance to pay for transaction fee. The max tx fee is 0.00089608 sol",
 		AptInsufficientFunds:      "Insufficient balance to pay for transaction fee. The max tx fee is 0.002 apt",
 		DotInsufficientFunds:      "Insufficient balance to pay for transaction fee. The max tx fee is 1 dot",
-		NetworkErr:                "Network error",
+		NetworkErr:                "Network error. Please retry later!",
+		FromBalanceZero:           "The balance of the coin contract is 0",
+		AccountNotFound:           "Account not found",
+		InvalidToAddr:             "Dest address is invalid",
+		InvalidPrivkey:            "Private key is invalid",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -103,7 +111,11 @@ var I18nMessage = map[string]map[string]string{
 		SolInsufficientFunds:      "余额不足以支付交易手续费，最大交易手续费为 0.00089608 sol",
 		AptInsufficientFunds:      "余额不足以支付交易手续费，最大交易手续费为 0.002 apt",
 		DotInsufficientFunds:      "余额不足以支付交易手续费，最大交易手续费为 1 dot",
-		NetworkErr:                "网络连接失败",
+		NetworkErr:                "网络错误，请重试",
+		FromBalanceZero:           "合约币余额为 0",
+		AccountNotFound:           "账户不存在",
+		InvalidToAddr:             "目标地址格式不正确",
+		InvalidPrivkey:            "私钥格式不正确",
 	},
 }
 

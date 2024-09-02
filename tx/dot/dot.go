@@ -6,13 +6,13 @@ import (
 	"math"
 	"strconv"
 
-	"recovery-tool/tx/dot/polkadot-adapter/polkadotTransaction"
-
 	"github.com/mr-tron/base58"
 	"github.com/shopspring/decimal"
 	"golang.org/x/crypto/blake2b"
 
 	"recovery-tool/common"
+	"recovery-tool/common/code"
+	"recovery-tool/tx/dot/polkadot-adapter/polkadotTransaction"
 	"recovery-tool/tx/eddsa"
 )
 
@@ -132,18 +132,22 @@ func (c *Dot) GetNonce(address string) (nonce uint64, err error) {
 func (c *Dot) Sign(coinAddress string, privkey []byte, toAddr string, amountDec decimal.Decimal) (sig string, err error) {
 	blockInfo, err := c.GetBlockInfo()
 	if err != nil {
+		common.Logger.Errorf("get block info err: %s", err.Error())
+		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
 		return
 	}
 
 	fromAddr, err := CalcAddress(privkey)
 	if err != nil {
-		return "", err
+		return "", code.NewI18nError(code.InvalidPrivkey, "Private key is invalid")
 	}
 	common.Logger.Infof("from: %s\n", fromAddr)
 
 	nonce, err := c.GetNonce(fromAddr)
 	if err != nil {
-		return "", fmt.Errorf("get nonce err: %s", err.Error())
+		common.Logger.Errorf("get nonce err: %s", err.Error())
+		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		return
 	}
 
 	properties := map[string]interface{}{
@@ -161,7 +165,6 @@ func (c *Dot) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 
 	err = dotPacker.Pack("dot", properties, coinAddress, amountDec, fromAddr, toAddr)
 	if err != nil {
-		err = fmt.Errorf("packer err: %s", err.Error())
 		return
 	}
 

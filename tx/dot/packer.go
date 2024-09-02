@@ -11,6 +11,7 @@ import (
 
 	"github.com/shopspring/decimal"
 
+	"recovery-tool/common/code"
 	"recovery-tool/tx/dot/polkadot-adapter/address"
 	"recovery-tool/tx/eddsa"
 
@@ -42,11 +43,11 @@ func (p *dotPackager) Pack(
 
 	senderPubKey, err := address.AddressDecode(p.fromAddr)
 	if err != nil {
-		return fmt.Errorf("address decode from addr fail")
+		return code.NewI18nError(code.InvalidPrivkey, "Private key is invalid")
 	}
 	recipientPubKey, err := address.AddressDecode(p.toAddr)
 	if err != nil {
-		return fmt.Errorf("address decode to addr fail")
+		return code.NewI18nError(code.InvalidToAddr, "Dest address is invalid")
 	}
 
 	nonce, exists := properties["nonce"]
@@ -74,16 +75,6 @@ func (p *dotPackager) Pack(
 	if !exists {
 		return fmt.Errorf("dot pack fail, block_hash missing")
 	}
-
-	//blockHeight, exists := properties["block_height"]
-	//if !exists {
-	//	return fmt.Errorf("dot pack fail, block_height missing")
-	//}
-
-	//blockHeightInt, err := strconv.ParseInt(blockHeight.(string), 10, 64)
-	//if err != nil {
-	//	return fmt.Errorf("dot pack fail, parseInt block_height fail")
-	//}
 
 	genesisHash, exists := properties["genesis_hash"]
 	if !exists {

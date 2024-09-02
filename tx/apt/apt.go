@@ -17,6 +17,8 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/the729/lcs"
 
+	"recovery-tool/common"
+	"recovery-tool/common/code"
 	"recovery-tool/crypto"
 	"recovery-tool/tx/eddsa"
 )
@@ -114,19 +116,23 @@ func (c *Apt) GetNonce(address string) (nonce uint64, err error) {
 func (c *Apt) GetGasPrice() (gasPrice *big.Int, err error) {
 	res, err := c.Client.EstimateGasPrice(context.Background())
 	if err != nil {
-		return big.NewInt(0), err
+		common.Logger.Errorf("get gas price err: %s", err.Error())
+		return big.NewInt(0), code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
 	}
 	gasPrice = big.NewInt(int64(res))
 	return gasPrice, nil
 }
 
-func (c *Apt) GetGas() (gasLimit decimal.Decimal, gasPrice decimal.Decimal, gasPremium decimal.Decimal) {
-	gasrice, _ := c.GetGasPrice()
-	return c.GasLimit, decimal.NewFromBigInt(gasrice, 0), decimal.Zero
+func (c *Apt) GetGas() (gasLimit decimal.Decimal, gasPrice decimal.Decimal, gasPremium decimal.Decimal, err error) {
+	gasrice, err := c.GetGasPrice()
+	return c.GasLimit, decimal.NewFromBigInt(gasrice, 0), decimal.Zero, err
 }
 
 func (c *Apt) GetTxFee(feeType int64, from, to, amount string, tag string) (fee decimal.Decimal, err error) {
-	gasLimit, gasPrice, _ := c.GetGas()
+	gasLimit, gasPrice, _, err := c.GetGas()
+	if err != nil {
+		return
+	}
 	fee = gasPrice.Mul(gasLimit).Div(decimal.NewFromFloat(math.Pow10(int(c.Decimals))))
 	if fee == decimal.Zero {
 		fee, _ = decimal.NewFromString(c.MaxFee)
@@ -157,12 +163,16 @@ func (c *Apt) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 
 	nonce, err := c.GetNonce(fromAddr)
 	if err != nil {
-		return "", fmt.Errorf("get nonce err: %s", err.Error())
+		common.Logger.Errorf("get nonce err: %s", err.Error())
+		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		return
 	}
 
-	gasLimit, gasPrice, _ := c.GetGas()
+	gasLimit, gasPrice, _, err := c.GetGas()
 	if err != nil {
-		return "", fmt.Errorf("get gas err: %s", err.Error())
+		common.Logger.Errorf("get gas err: %s", err.Error())
+		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
+		return
 	}
 
 	properties := map[string]interface{}{
@@ -176,7 +186,7 @@ func (c *Apt) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 
 	err = aptPacker.Pack("dot", properties, coinAddress, amountDec, fromAddr, toAddr)
 	if err != nil {
-		err = fmt.Errorf("packer err: %s", err.Error())
+		common.Logger.Errorf("packer err: %s", err.Error())
 		return
 	}
 
@@ -219,6 +229,7 @@ func (c *Apt) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 	}
 	txHash, err = c.SendRawTransaction(sig)
 	if err != nil {
+		common.Logger.Errorf("send tx err: %s", err.Error())
 		return
 	}
 	return txHash, nil

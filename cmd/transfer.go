@@ -56,6 +56,9 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 			if strings.Contains(err.Error(), "INSUFFICIENT") {
 				return "", code.NewI18nError(code.AptInsufficientFunds, "Insufficient balance to pay for transaction fee. The max tx fee is 0.002 apt")
 			}
+			if strings.Contains(err.Error(), "account_not_found") {
+				return "", code.NewI18nError(code.AccountNotFound, "Account not found")
+			}
 			return "", err
 		}
 		return txHash, nil

@@ -10,6 +10,7 @@ import (
 	"github.com/portto/aptos-go-sdk/models"
 	"github.com/shopspring/decimal"
 
+	"recovery-tool/common/code"
 	"recovery-tool/tx/eddsa"
 )
 
@@ -78,7 +79,7 @@ func (p *aptPackager) Pack(
 
 	toAcc, err := models.HexToAccountAddress(p.toAddr)
 	if err != nil {
-		return fmt.Errorf("apt pack fail, HexToAccountAddress err")
+		return code.NewI18nError(code.InvalidToAddr, "Dest address is invalid")
 	}
 
 	amountInt, err := eddsa.BigMulDecimal(p.amount, decimalsInt)

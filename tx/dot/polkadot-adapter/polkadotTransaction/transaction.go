@@ -3,6 +3,7 @@ package polkadotTransaction
 import (
 	"encoding/hex"
 	"errors"
+	"recovery-tool/common/code"
 
 	"github.com/blocktree/go-owcrypt"
 )
@@ -23,7 +24,7 @@ func SignTransaction(msgStr string, prikey []byte) ([]byte, error) {
 	}
 
 	if prikey == nil || len(prikey) != 32 {
-		return nil, errors.New("invalid private key")
+		return nil, code.NewI18nError(code.InvalidToAddr, "Dest address is invalid")
 	}
 
 	signature, _, retCode := owcrypt.Signature(prikey, nil, msg, owcrypt.ECC_CURVE_ED25519)
