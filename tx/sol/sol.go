@@ -160,7 +160,7 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 			return
 		}
 		if fromAssociatedAddress == "" {
-			err = code.NewI18nError(code.FromBalanceZero, "The balance of the coin contract is 0")
+			err = code.NewI18nError(code.SrcCoinAccountNotFound, "TThe sending token address does not exist, please check and try again.")
 			return
 		}
 		properties["from"] = fromAssociatedAddress
@@ -173,7 +173,7 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 			return
 		}
 		if toAssociatedAddress == "" {
-			err = fmt.Errorf("the balance of the coin contract is 0: %s", toAddr)
+			err = code.NewI18nError(code.DstCoinAccountNotFound, "The balance of the dst coin contract is 0")
 			return
 		}
 		cm.Logger.Infof("to associated addr: %s", toAssociatedAddress)

@@ -43,11 +43,11 @@ func (p *dotPackager) Pack(
 
 	senderPubKey, err := address.AddressDecode(p.fromAddr)
 	if err != nil {
-		return code.NewI18nError(code.InvalidPrivkey, "Private key is invalid")
+		return code.NewI18nError(code.PrivkeyInvalid, "The private key format is wrong, please re-enter.")
 	}
 	recipientPubKey, err := address.AddressDecode(p.toAddr)
 	if err != nil {
-		return code.NewI18nError(code.InvalidToAddr, "Dest address is invalid")
+		return code.NewI18nError(code.DstAddrInvalid, "Dest address is invalid")
 	}
 
 	nonce, exists := properties["nonce"]

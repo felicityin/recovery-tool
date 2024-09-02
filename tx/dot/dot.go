@@ -139,7 +139,7 @@ func (c *Dot) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 
 	fromAddr, err := CalcAddress(privkey)
 	if err != nil {
-		return "", code.NewI18nError(code.InvalidPrivkey, "Private key is invalid")
+		return "", code.NewI18nError(code.PrivkeyInvalid, "Private key is invalid")
 	}
 	common.Logger.Infof("from: %s\n", fromAddr)
 

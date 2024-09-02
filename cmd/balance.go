@@ -37,7 +37,7 @@ func (result BalanceResult) ToJsonStr() string {
 
 func GetBalance(chain, url, addr, coinAddress string) (*BalanceResult, error) {
 	if addr == "" {
-		return nil, code.NewI18nError(code.AddrNotEmpty, "The address cannot be empty")
+		return nil, code.NewI18nError(code.SrcAddrNotEmpty, "The address cannot be empty")
 	}
 
 	if chain != "sol" && coinAddress != "" {

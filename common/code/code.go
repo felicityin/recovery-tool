@@ -28,19 +28,21 @@ var (
 	RSAKeyNotEmpty            = "517"
 	FailedToParseDataErr      = "518"
 
-	PrivkeyIsHex         = "600"
-	InvalidPrivkey       = "601"
-	DstAddrNotEmpty      = "602"
-	AddrNotEmpty         = "603"
-	InvalidToAddr        = "604"
-	AccountNotFound      = "605"
-	AmountInvalid        = "606"
-	CoinUnsupported      = "607"
-	SolInsufficientFunds = "608"
-	AptInsufficientFunds = "609"
-	DotInsufficientFunds = "610"
-	NetworkErr           = "611"
-	FromBalanceZero      = "612"
+	PrivkeyIsHex           = "600"
+	PrivkeyInvalid         = "601"
+	DstAddrNotEmpty        = "602"
+	SrcAddrNotEmpty        = "603" // get balance
+	DstAddrInvalid         = "604"
+	SrcAccountNotFound     = "605"
+	DstAccountNotFound     = "606"
+	SrcCoinAccountNotFound = "607"
+	DstCoinAccountNotFound = "608"
+	AmountInvalid          = "609"
+	CoinUnsupported        = "610"
+	SolInsufficientFunds   = "611"
+	AptInsufficientFunds   = "612"
+	DotInsufficientFunds   = "613"
+	NetworkErr             = "614"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -68,19 +70,21 @@ var I18nMessage = map[string]map[string]string{
 		VaultIndexParamErr:        "Vault index param error.",
 		FailedToParseDataErr:      "Failed to parse backup data.",
 
-		PrivkeyIsHex:         "The private key should be in hexadecimal format",
-		DstAddrNotEmpty:      "The recipient's address cannot be empty",
-		InvalidToAddr:        "Dest address is invalid",
-		InvalidPrivkey:       "Private key is invalid",
-		AmountInvalid:        "Unable to convert transfer amount to decimal",
-		CoinUnsupported:      "This chain only supports main chain coin for now",
-		AddrNotEmpty:         "The address cannot be empty",
-		SolInsufficientFunds: "Insufficient balance to pay for transaction fee. The max tx fee is 0.00089608 sol",
-		AptInsufficientFunds: "Insufficient balance to pay for transaction fee. The max tx fee is 0.002 apt",
-		DotInsufficientFunds: "Insufficient balance to pay for transaction fee. The max tx fee is 1 dot",
-		NetworkErr:           "Network error. Please retry later!",
-		FromBalanceZero:      "The balance of the coin contract is 0",
-		AccountNotFound:      "Account not found",
+		PrivkeyIsHex:           "The private key should be in hexadecimal format.",
+		PrivkeyInvalid:         "The private key format is wrong, please re-enter.",
+		DstAddrNotEmpty:        "The target address cannot be empty, please re-enter.",
+		SrcAddrNotEmpty:        "The address cannot be empty, please re-enter.",
+		DstAddrInvalid:         "The receiving address format is incorrect, please re-enter.",
+		DstAccountNotFound:     "The receiving account does not exist, please check and try again",
+		SrcAccountNotFound:     "The sending account does not exist, please check and try again",
+		SrcCoinAccountNotFound: "The sending token address does not exist, please check and try again.",
+		DstCoinAccountNotFound: "The receiving token address does not exist, please check and try again.",
+		AmountInvalid:          "Please enter the correct amount.",
+		CoinUnsupported:        "This chain does not support non-main chain currency.",
+		SolInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.00089608 sol).",
+		AptInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.002 apt).",
+		DotInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 1 dot).",
+		NetworkErr:             "Network error, please try again later.",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -106,19 +110,21 @@ var I18nMessage = map[string]map[string]string{
 		VaultIndexParamErr:        "钱包数量 参数错误",
 		FailedToParseDataErr:      "解析备份数据失败",
 
-		PrivkeyIsHex:         "私钥应该为 16 进制格式",
-		InvalidPrivkey:       "私钥格式不正确",
-		DstAddrNotEmpty:      "目标地址不能为空",
-		InvalidToAddr:        "目标地址格式不正确",
-		AddrNotEmpty:         "地址不能为空",
-		AccountNotFound:      "账户不存在",
-		AmountInvalid:        "转账金额无法转换为小数",
-		CoinUnsupported:      "该链暂时只支持主链币",
-		SolInsufficientFunds: "余额不足以支付交易手续费，最大交易手续费为 0.00089608 sol",
-		AptInsufficientFunds: "余额不足以支付交易手续费，最大交易手续费为 0.002 apt",
-		DotInsufficientFunds: "余额不足以支付交易手续费，最大交易手续费为 1 dot",
-		NetworkErr:           "网络错误，请稍后重试",
-		FromBalanceZero:      "合约币余额为 0",
+		PrivkeyIsHex:           "私钥应该为 16 进制格式",
+		PrivkeyInvalid:         "私钥格式错误，请重新填写",
+		DstAddrNotEmpty:        "目标地址不能为空，请重新填写",
+		SrcAddrNotEmpty:        "地址不能为空，请重新填写",
+		DstAddrInvalid:         "接收地址格式不正确，请重新填写",
+		DstAccountNotFound:     "接收账户不存在，请检查后重试",
+		SrcAccountNotFound:     "发送账户不存在，请检查后重试",
+		DstCoinAccountNotFound: "接收代币地址不存在，请检查后重试",
+		SrcCoinAccountNotFound: "发送代币地址不存在，请检查后重试",
+		AmountInvalid:          "请输入正确数量",
+		CoinUnsupported:        "该链暂不支持非主链币发送",
+		SolInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.00089608 sol）",
+		AptInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.002 apt）",
+		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot）",
+		NetworkErr:             "网络错误，请稍后重试",
 	},
 }
 

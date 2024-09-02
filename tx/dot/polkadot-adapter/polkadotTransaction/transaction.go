@@ -24,7 +24,7 @@ func SignTransaction(msgStr string, prikey []byte) ([]byte, error) {
 	}
 
 	if prikey == nil || len(prikey) != 32 {
-		return nil, code.NewI18nError(code.InvalidToAddr, "Dest address is invalid")
+		return nil, code.NewI18nError(code.DstAddrInvalid, "Dest address is invalid")
 	}
 
 	signature, _, retCode := owcrypt.Signature(prikey, nil, msg, owcrypt.ECC_CURVE_ED25519)

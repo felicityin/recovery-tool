@@ -19,7 +19,7 @@ func Sign(chain, url, privkey, toAddr, amount, coinAddress string) (string, erro
 	}
 
 	if toAddr == "" {
-		return "", code.NewI18nError(code.DstAddrNotEmpty, "The recipient's address cannot be empty")
+		return "", code.NewI18nError(code.DstAddrNotEmpty, "The target address cannot be empty, please re-enter.")
 	}
 
 	amountDec, err := decimal.NewFromString(amount)

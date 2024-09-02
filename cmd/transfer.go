@@ -21,7 +21,7 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 	}
 
 	if toAddr == "" {
-		return "", code.NewI18nError(code.DstAddrNotEmpty, "The recipient's address cannot be empty")
+		return "", code.NewI18nError(code.DstAddrNotEmpty, "The target address cannot be empty, please re-enter.")
 	}
 
 	amountDec, err := decimal.NewFromString(amount)
@@ -39,8 +39,14 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 		txHash, err := sol.Transfer(coinAddress, priv, toAddr, amountDec)
 		if err != nil {
 			common.Logger.Errorf("[sol] transfer err: %s", err.Error())
-			if strings.Contains(err.Error(), "insufficient") {
-				return "", code.NewI18nError(code.SolInsufficientFunds, "Insufficient balance to pay for transaction fee. The max tx fee is 0.00089608 sol")
+			if strings.Contains(err.Error(), "Transaction results in an account (0) with insufficient funds for rent") {
+				return "", code.NewI18nError(code.SolInsufficientFunds, "Insufficient gas fee (the current maximum transaction fee on the chain is 0.00089608 sol).")
+			}
+			if strings.Contains(err.Error(), "AccountNotFound") {
+				return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
+			}
+			if strings.Contains(err.Error(), "Transaction results in an account (1) with insufficient funds for rent") {
+				return "", code.NewI18nError(code.DstAccountNotFound, "The receiving account does not exist, please check and try again")
 			}
 			return "", err
 		}
@@ -53,11 +59,8 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 		txHash, err := apt.Transfer("", priv, toAddr, amountDec)
 		if err != nil {
 			common.Logger.Errorf("[apt] transfer err: %s", err.Error())
-			if strings.Contains(err.Error(), "INSUFFICIENT") {
-				return "", code.NewI18nError(code.AptInsufficientFunds, "Insufficient balance to pay for transaction fee. The max tx fee is 0.002 apt")
-			}
-			if strings.Contains(err.Error(), "account_not_found") {
-				return "", code.NewI18nError(code.AccountNotFound, "Account not found")
+			if strings.Contains(err.Error(), "INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE") {
+				return "", code.NewI18nError(code.AptInsufficientFunds, "Insufficient gas fee (the current maximum transaction fee on the chain is 0.002 apt).")
 			}
 			return "", err
 		}
@@ -70,8 +73,8 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 		txHash, err := dot.Transfer("", priv, toAddr, amountDec)
 		if err != nil {
 			common.Logger.Errorf("[dot] transfer err: %s", err.Error())
-			if strings.Contains(err.Error(), "low") {
-				return "", code.NewI18nError(code.DotInsufficientFunds, "Insufficient balance to pay for transaction fee. The max tx fee is 1 dot")
+			if strings.Contains(err.Error(), "Inability to pay some fees") {
+				return "", code.NewI18nError(code.DotInsufficientFunds, "Insufficient gas fee (the current maximum transaction fee on the chain is 1 dot).")
 			}
 			return "", err
 		}

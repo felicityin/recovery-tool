@@ -79,7 +79,7 @@ func (p *aptPackager) Pack(
 
 	toAcc, err := models.HexToAccountAddress(p.toAddr)
 	if err != nil {
-		return code.NewI18nError(code.InvalidToAddr, "Dest address is invalid")
+		return code.NewI18nError(code.DstAddrInvalid, "Dest address is invalid")
 	}
 
 	amountInt, err := eddsa.BigMulDecimal(p.amount, decimalsInt)

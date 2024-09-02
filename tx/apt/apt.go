@@ -164,6 +164,9 @@ func (c *Apt) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 	nonce, err := c.GetNonce(fromAddr)
 	if err != nil {
 		common.Logger.Errorf("get nonce err: %s", err.Error())
+		if strings.Contains(err.Error(), "account_not_found") {
+			return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
+		}
 		err = code.NewI18nError(code.NetworkErr, "Network error. Please retry later!")
 		return
 	}
