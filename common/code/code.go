@@ -36,8 +36,9 @@ var (
 	SrcAccountNotFound     = "605"
 	DstAccountNotFound     = "606"
 	SrcCoinAccountNotFound = "607"
-	AmountInvalid          = "609"
-	CoinUnsupported        = "610"
+	AmountInvalid          = "608"
+	CoinUnsupported        = "609"
+	CoinAddrInvalid        = "610"
 	SolInsufficientFunds   = "611"
 	AptInsufficientFunds   = "612"
 	DotInsufficientFunds   = "613"
@@ -69,7 +70,7 @@ var I18nMessage = map[string]map[string]string{
 		VaultIndexParamErr:        "Vault index param error.",
 		FailedToParseDataErr:      "Failed to parse backup data.",
 
-		PrivkeyIsHex:           "The private key should be in hexadecimal format.",
+		PrivkeyIsHex:           "The private key should be in hexadecimal format, please re-enter.",
 		PrivkeyInvalid:         "The private key format is wrong, please re-enter.",
 		DstAddrNotEmpty:        "The target address cannot be empty, please re-enter.",
 		SrcAddrNotEmpty:        "The address cannot be empty, please re-enter.",
@@ -79,6 +80,7 @@ var I18nMessage = map[string]map[string]string{
 		SrcCoinAccountNotFound: "The sending token address does not exist, please check and try again.",
 		AmountInvalid:          "Please enter the correct amount.",
 		CoinUnsupported:        "This chain does not support non-main chain currency.",
+		CoinAddrInvalid:        "The token address format is wrong, please re-enter.",
 		SolInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.00089608 sol).",
 		AptInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.002 apt).",
 		DotInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 1 dot).",
@@ -108,7 +110,7 @@ var I18nMessage = map[string]map[string]string{
 		VaultIndexParamErr:        "钱包数量 参数错误",
 		FailedToParseDataErr:      "解析备份数据失败",
 
-		PrivkeyIsHex:           "私钥应该为 16 进制格式",
+		PrivkeyIsHex:           "私钥应该为十六进制格式，请重新填写",
 		PrivkeyInvalid:         "私钥格式错误，请重新填写",
 		DstAddrNotEmpty:        "目标地址不能为空，请重新填写",
 		SrcAddrNotEmpty:        "地址不能为空，请重新填写",
@@ -118,6 +120,7 @@ var I18nMessage = map[string]map[string]string{
 		SrcCoinAccountNotFound: "发送代币地址不存在，请检查后重试",
 		AmountInvalid:          "请输入正确数量",
 		CoinUnsupported:        "该链暂不支持非主链币发送",
+		CoinAddrInvalid:        "合约币地址格式错误，请重新填写",
 		SolInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.00089608 sol)",
 		AptInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.002 apt)",
 		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot)",
