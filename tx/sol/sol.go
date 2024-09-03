@@ -68,7 +68,6 @@ func (c *Sol) GetAssociatedAddress(ownerAddres string, coinAddress string) (asso
 func (c *Sol) GetContractDecimals(coinAddress string) (decimals int64, err error) {
 	res, err := c.Client.GetTokenSupply(context.Background(), coinAddress)
 	if err != nil {
-		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return 0, err
 	}
 	return int64(res.Result.Value.Decimals), nil
@@ -239,6 +238,10 @@ func (c *Sol) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 	response, err := c.Client.SendTransaction(context.Background(), sig)
 	if err != nil {
 		cm.Logger.Errorf("send tx err: %s", err.Error())
+		if strings.Contains(err.Error(), "429") {
+			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
+			return
+		}
 		return
 	}
 	return response.Result, nil

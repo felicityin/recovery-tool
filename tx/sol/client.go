@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"recovery-tool/common"
-	"recovery-tool/common/code"
 	"time"
 )
 
@@ -84,7 +83,7 @@ func preparePayload(params []interface{}) ([]byte, error) {
 func (c *Client) processRpcCall(body []byte, rpcErr error, res interface{}) error {
 	if rpcErr != nil {
 		common.Logger.Errorf("rpc: call error, err: %v", rpcErr)
-		return code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
+		return fmt.Errorf("rpc: call error, err: %v", rpcErr)
 	}
 	err := json.Unmarshal(body, &res)
 	if err != nil {
