@@ -156,7 +156,7 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 		fromAssociatedAddress, err1 := c.GetAssociatedAddress(fromAddr, coinAddress)
 		if err1 != nil {
 			cm.Logger.Errorf("get from associated addr err: %s", err1.Error())
-			if strings.Contains(err.Error(), "Invalid param: WrongSize") {
+			if strings.Contains(err1.Error(), "Invalid param: WrongSize") {
 				return "", code.NewI18nError(code.CoinAddrInvalid, "The token address format is wrong, please re-enter.")
 			}
 			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
