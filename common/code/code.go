@@ -28,7 +28,6 @@ var (
 	RSAKeyNotEmpty            = "517"
 	FailedToParseDataErr      = "518"
 
-	PrivkeyIsHex           = "600"
 	PrivkeyInvalid         = "601"
 	DstAddrNotEmpty        = "602"
 	SrcAddrNotEmpty        = "603" // get balance
@@ -71,7 +70,6 @@ var I18nMessage = map[string]map[string]string{
 		VaultIndexParamErr:        "Vault index param error.",
 		FailedToParseDataErr:      "Failed to parse backup data.",
 
-		PrivkeyIsHex:           "The private key should be in hexadecimal format, please re-enter.",
 		PrivkeyInvalid:         "The private key format is wrong, please re-enter.",
 		DstAddrNotEmpty:        "The target address cannot be empty, please re-enter.",
 		SrcAddrNotEmpty:        "The address cannot be empty, please re-enter.",
@@ -112,7 +110,6 @@ var I18nMessage = map[string]map[string]string{
 		VaultIndexParamErr:        "钱包数量 参数错误",
 		FailedToParseDataErr:      "解析备份数据失败",
 
-		PrivkeyIsHex:           "私钥应该为十六进制格式，请重新填写",
 		PrivkeyInvalid:         "私钥格式错误，请重新填写",
 		DstAddrNotEmpty:        "目标地址不能为空，请重新填写",
 		SrcAddrNotEmpty:        "地址不能为空，请重新填写",
