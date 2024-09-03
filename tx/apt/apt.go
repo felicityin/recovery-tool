@@ -233,6 +233,7 @@ func (c *Apt) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 	txHash, err = c.SendRawTransaction(sig)
 	if err != nil {
 		common.Logger.Errorf("send tx err: %s", err.Error())
+		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 	return txHash, nil
