@@ -39,13 +39,13 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 		txHash, err := sol.Transfer(coinAddress, priv, toAddr, amountDec)
 		if err != nil {
 			common.Logger.Errorf("[sol] transfer err: %s", err.Error())
-			if strings.Contains(err.Error(), "Transaction results in an account (0) with insufficient funds for rent") {
+			if strings.Contains(err.Error(), "insufficient lamports") || strings.Contains(err.Error(), "account (0) with insufficient funds for rent") {
 				return "", code.NewI18nError(code.SolInsufficientFunds, "Insufficient gas fee (the current maximum transaction fee on the chain is 0.00089608 sol).")
 			}
 			if strings.Contains(err.Error(), "AccountNotFound") {
 				return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
 			}
-			if strings.Contains(err.Error(), "Transaction results in an account (1) with insufficient funds for rent") {
+			if strings.Contains(err.Error(), "account (1) with insufficient funds for rent") {
 				return "", code.NewI18nError(code.DstAccountNotFound, "The receiving account does not exist, please check and try again")
 			}
 			return "", err
