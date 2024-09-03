@@ -39,10 +39,11 @@ var (
 	AmountInvalid          = "608"
 	CoinUnsupported        = "609"
 	CoinAddrInvalid        = "610"
-	SolInsufficientFunds   = "611"
-	AptInsufficientFunds   = "612"
-	DotInsufficientFunds   = "613"
-	NetworkErr             = "614"
+	CoinAddrNotExists      = "611"
+	SolInsufficientFunds   = "612"
+	AptInsufficientFunds   = "613"
+	DotInsufficientFunds   = "614"
+	NetworkErr             = "615"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -80,7 +81,8 @@ var I18nMessage = map[string]map[string]string{
 		SrcCoinAccountNotFound: "The sending token address does not exist, please check and try again.",
 		AmountInvalid:          "Please enter the correct amount.",
 		CoinUnsupported:        "This chain does not support non-main chain currency.",
-		CoinAddrInvalid:        "The token address format is wrong, please re-enter.",
+		CoinAddrInvalid:        "The token contract address format is wrong, please re-enter.",
+		CoinAddrNotExists:      "The token contract address does not exist, please re-enter.",
 		SolInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.00089608 sol).",
 		AptInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.002 apt).",
 		DotInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 1 dot).",
@@ -121,6 +123,7 @@ var I18nMessage = map[string]map[string]string{
 		AmountInvalid:          "请输入正确数量",
 		CoinUnsupported:        "该链暂不支持非主链币发送",
 		CoinAddrInvalid:        "合约币地址格式错误，请重新填写",
+		CoinAddrNotExists:      "合约币地址不存在，请重新填写",
 		SolInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.00089608 sol)",
 		AptInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.002 apt)",
 		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot)",

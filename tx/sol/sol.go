@@ -157,7 +157,10 @@ func (c *Sol) Sign(coinAddress string, privkey []byte, toAddr string, amountDec 
 		if err1 != nil {
 			cm.Logger.Errorf("get from associated addr err: %s", err1.Error())
 			if strings.Contains(err1.Error(), "Invalid param: WrongSize") {
-				return "", code.NewI18nError(code.CoinAddrInvalid, "The token address format is wrong, please re-enter.")
+				return "", code.NewI18nError(code.CoinAddrInvalid, "The token contract address format is wrong, please re-enter.")
+			}
+			if strings.Contains(err1.Error(), "Invalid param: could not find mint") {
+				return "", code.NewI18nError(code.CoinAddrNotExists, "The token contract address does not exist, please re-enter")
 			}
 			err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 			return
