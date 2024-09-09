@@ -238,7 +238,6 @@ func (c *Sol) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 	response, err := c.Client.SendTransaction(context.Background(), sig)
 	if err != nil {
 		cm.Logger.Errorf("send tx err: %s", err.Error())
-		err = code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 		return
 	}
 	return response.Result, nil

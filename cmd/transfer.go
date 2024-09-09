@@ -48,6 +48,9 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 			if strings.Contains(err.Error(), "account (1) with insufficient funds for rent") {
 				return "", code.NewI18nError(code.DstAccountNotFound, "The receiving account does not exist, please check and try again")
 			}
+			if strings.Contains(err.Error(), "get status code: 429") || strings.Contains(err.Error(), "Blockhash not found") {
+				return "", code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
+			}
 			return "", err
 		}
 		return txHash, nil
