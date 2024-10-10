@@ -7,21 +7,13 @@
 package common
 
 import (
-	"os"
-
-	"github.com/sirupsen/logrus"
+	"github.com/ipfs/go-log"
 )
 
-var Logger = logrus.New()
+var Logger = log.Logger("recovery")
 
 func init() {
-	// Log as JSON instead of the default ASCII formatter.
-	Logger.SetFormatter(&logrus.JSONFormatter{})
-
-	// Output to stdout instead of the default stderr
-	// Can be any io.Writer, see below for File example
-	Logger.SetOutput(os.Stdout)
-
-	// Only log the warning severity or above.
-	Logger.SetLevel(logrus.InfoLevel)
+	if err := log.SetLogLevel("recovery", "info"); err != nil {
+		panic(err)
+	}
 }

@@ -85,6 +85,9 @@ extern __declspec(dllexport) char* GetChainList1();
 extern __declspec(dllexport) RSResult GetChainList();
 extern __declspec(dllexport) char* MacGetChainList();
 extern __declspec(dllexport) RSResult GoRecovery(GoString zipPath, GoString userMnemonic, GoString eciesPrivKey, GoString rsaPrivKeyPath, GoString vaultCount, GoString chains, GoString language);
+extern __declspec(dllexport) RSResult GoBalance(GoString chain, GoString url, GoString addr, GoString coinAddress, GoString language);
+extern __declspec(dllexport) RSResult GoSign(GoString chain, GoString url, GoString privkey, GoString toAddr, GoString amount, GoString coinAddress, GoString language);
+extern __declspec(dllexport) RSResult GoTransfer(GoString chain, GoString url, GoString privkey, GoString toAddr, GoString amount, GoString coinAddress, GoString language);
 
 #ifdef __cplusplus
 }
