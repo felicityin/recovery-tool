@@ -27,6 +27,22 @@ var (
 	VaultIndexParamErr        = "516"
 	RSAKeyNotEmpty            = "517"
 	FailedToParseDataErr      = "518"
+
+	PrivkeyInvalid         = "601"
+	DstAddrNotEmpty        = "602"
+	SrcAddrNotEmpty        = "603" // get balance
+	DstAddrInvalid         = "604"
+	SrcAccountNotFound     = "605"
+	DstAccountNotFound     = "606"
+	SrcCoinAccountNotFound = "607"
+	AmountInvalid          = "608"
+	CoinUnsupported        = "609"
+	CoinAddrInvalid        = "610"
+	CoinAddrNotExists      = "611"
+	SolInsufficientFunds   = "612"
+	AptInsufficientFunds   = "613"
+	DotInsufficientFunds   = "614"
+	NetworkErr             = "615"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -53,6 +69,22 @@ var I18nMessage = map[string]map[string]string{
 		FileFormatErr:             "File format error.",
 		VaultIndexParamErr:        "Vault index param error.",
 		FailedToParseDataErr:      "Failed to parse backup data.",
+
+		PrivkeyInvalid:         "The private key format is wrong, please re-enter.",
+		DstAddrNotEmpty:        "The target address cannot be empty, please re-enter.",
+		SrcAddrNotEmpty:        "The address cannot be empty, please re-enter.",
+		DstAddrInvalid:         "The receiving address format is incorrect, please re-enter.",
+		DstAccountNotFound:     "The receiving account does not exist, please check and try again",
+		SrcAccountNotFound:     "The sending account does not exist, please check and try again",
+		SrcCoinAccountNotFound: "The sending token address does not exist, please check and try again.",
+		AmountInvalid:          "Please enter the correct amount.",
+		CoinUnsupported:        "This chain does not support non-main chain currency.",
+		CoinAddrInvalid:        "The format of the counterparty contract address is incorrect, please re-enter it.",
+		CoinAddrNotExists:      "The counterparty contract address does not exist, please re-enter it.",
+		SolInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.00089608 sol).",
+		AptInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.002 apt).",
+		DotInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 1 dot).",
+		NetworkErr:             "Network error, please try again later.",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -77,6 +109,22 @@ var I18nMessage = map[string]map[string]string{
 		FileFormatErr:             "文件格式错误",
 		VaultIndexParamErr:        "钱包数量 参数错误",
 		FailedToParseDataErr:      "解析备份数据失败",
+
+		PrivkeyInvalid:         "私钥格式错误，请重新填写",
+		DstAddrNotEmpty:        "目标地址不能为空，请重新填写",
+		SrcAddrNotEmpty:        "地址不能为空，请重新填写",
+		DstAddrInvalid:         "接收地址格式不正确，请重新填写",
+		DstAccountNotFound:     "接收账户不存在，请检查后重试",
+		SrcAccountNotFound:     "发送账户不存在，请检查后重试",
+		SrcCoinAccountNotFound: "发送代币地址不存在，请检查后重试",
+		AmountInvalid:          "请输入正确数量",
+		CoinUnsupported:        "该链暂不支持非主链币发送",
+		CoinAddrInvalid:        "合约币地址格式错误，请重新填写",
+		CoinAddrNotExists:      "合约币地址不存在，请重新填写",
+		SolInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.00089608 sol)",
+		AptInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.002 apt)",
+		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot)",
+		NetworkErr:             "网络错误，请稍后重试",
 	},
 }
 
@@ -93,7 +141,23 @@ func GetMessage(language string, code string, arg ...string) string {
 	if code != Success {
 		return fmt.Sprintf("%s%s%s", info["fail_prefix"], strings.Join(arg, ""), message)
 	}
-	return fmt.Sprintf("%s", info["succ_prefix"])
+	return info["succ_prefix"]
+}
+
+func GetMsg(language string, code string, arg ...string) string {
+	info, ok := I18nMessage[language]
+	if !ok {
+		info = I18nMessage["en"]
+	}
+
+	var message string
+	if message, ok = info[code]; !ok {
+		message = info[SystemErr]
+	}
+	if code != Success {
+		return message
+	}
+	return ""
 }
 
 func ParamErrorMsg(language, code string, arg ...string) string {

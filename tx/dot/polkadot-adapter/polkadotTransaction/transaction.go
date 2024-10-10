@@ -1,0 +1,68 @@
+package polkadotTransaction
+
+import (
+	"encoding/hex"
+	"errors"
+	"recovery-tool/common/code"
+
+	"github.com/blocktree/go-owcrypt"
+)
+
+func (ts TxStruct) CreateEmptyTransactionAndMessage(transferCode string) (string, string, error) {
+	tp, err := ts.NewTxPayLoad(transferCode)
+	if err != nil {
+		return "", "", err
+	}
+
+	return ts.ToJSONString(), tp.NewVersionToBytesString(), nil
+}
+
+func SignTransaction(msgStr string, prikey []byte) ([]byte, error) {
+	msg, err := hex.DecodeString(msgStr)
+	if err != nil || len(msg) == 0 {
+		return nil, errors.New("invalid message to sign")
+	}
+
+	if prikey == nil || len(prikey) != 32 {
+		return nil, code.NewI18nError(code.DstAddrInvalid, "Dest address is invalid")
+	}
+
+	signature, _, retCode := owcrypt.Signature(prikey, nil, msg, owcrypt.ECC_CURVE_ED25519)
+	if retCode != owcrypt.SUCCESS {
+		return nil, errors.New("sign failed")
+	}
+
+	return signature, nil
+}
+
+func VerifyAndCombineTransaction(transferCode, emptyTrans, signature string) (string, bool) {
+	ts, err := NewTxStructFromJSON(emptyTrans)
+	if err != nil {
+		return "", false
+	}
+
+	tp, err := ts.NewTxPayLoad(transferCode)
+	if err != nil {
+		return "", false
+	}
+
+	msg, _ := hex.DecodeString(tp.NewVersionToBytesString())
+
+	pubkey, _ := hex.DecodeString(ts.SenderPubkey)
+
+	sig, err := hex.DecodeString(signature)
+	if err != nil || len(sig) != 64 {
+		return "", false
+	}
+
+	if owcrypt.SUCCESS != owcrypt.Verify(pubkey, nil, msg, sig, owcrypt.ECC_CURVE_ED25519) {
+		return "", false
+	}
+
+	signned, err := ts.GetSignedTransaction(transferCode, signature)
+	if err != nil {
+		return "", false
+	}
+
+	return signned, true
+}

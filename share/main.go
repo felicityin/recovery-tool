@@ -65,7 +65,7 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 	vaultCountInt, err := strconv.Atoi(vaultCount)
 	if err != nil {
 		return C.RSResult{
-			errMsg: C.CString(code.GetMessage(language, code.VaultIndexParamErr, "RSA")),
+			errMsg: C.CString(code.GetMessage(language, code.VaultIndexParamErr)),
 			data:   C.CString(""),
 			ok:     C.FALSE,
 		}
@@ -112,6 +112,84 @@ func GoRecovery(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount,
 	return C.RSResult{
 		errMsg: C.CString(msg),
 		data:   C.CString(data),
+		ok:     C.TRUE,
+	}
+}
+
+//export GoBalance
+func GoBalance(chain, url, addr, coinAddress, language string) C.RSResult {
+	res, err := cmd.GetBalance(cmd.ShortChainName(chain), url, addr, coinAddress)
+
+	if err != nil {
+		var errMsg string
+		i18nErr, ok := err.(*code.I18nError)
+		if ok {
+			errMsg = code.GetMsg(language, i18nErr.Code)
+		} else {
+			errMsg = err.Error()
+		}
+		return C.RSResult{
+			errMsg: C.CString(errMsg),
+			data:   C.CString(""),
+			ok:     C.FALSE,
+		}
+	}
+
+	return C.RSResult{
+		errMsg: C.CString(""),
+		data:   C.CString(res.ToJsonStr()),
+		ok:     C.TRUE,
+	}
+}
+
+//export GoSign
+func GoSign(chain, url, privkey, toAddr, amount, coinAddress, language string) C.RSResult {
+	txHash, err := cmd.Sign(cmd.ShortChainName(chain), url, privkey, toAddr, amount, coinAddress)
+
+	if err != nil {
+		var errMsg string
+		i18nErr, ok := err.(*code.I18nError)
+		if ok {
+			errMsg = code.GetMsg(language, i18nErr.Code)
+		} else {
+			errMsg = err.Error()
+		}
+		return C.RSResult{
+			errMsg: C.CString(errMsg),
+			data:   C.CString(""),
+			ok:     C.FALSE,
+		}
+	}
+
+	return C.RSResult{
+		errMsg: C.CString(""),
+		data:   C.CString(fmt.Sprintf("%s/%s", cmd.Scan(chain), txHash)),
+		ok:     C.TRUE,
+	}
+}
+
+//export GoTransfer
+func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language string) C.RSResult {
+	txHash, err := cmd.Transfer(cmd.ShortChainName(chain), url, privkey, toAddr, amount, coinAddress)
+
+	if err != nil {
+		var errMsg string
+		i18nErr, ok := err.(*code.I18nError)
+		if ok {
+			errMsg = code.GetMsg(language, i18nErr.Code)
+		} else {
+			errMsg = err.Error()
+		}
+		return C.RSResult{
+			errMsg: C.CString(errMsg),
+			data:   C.CString(""),
+			ok:     C.FALSE,
+		}
+	}
+
+	return C.RSResult{
+		errMsg: C.CString(""),
+		data:   C.CString(fmt.Sprintf("%s/%s", cmd.Scan(chain), txHash)),
 		ok:     C.TRUE,
 	}
 }
