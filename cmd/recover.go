@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"math/big"
 	"strings"
 
@@ -15,7 +16,7 @@ import (
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil"
 	ecies "github.com/ecies/go/v2"
-	"math"
+
 	"recovery-tool/common"
 	"recovery-tool/common/code"
 	"recovery-tool/crypto"
@@ -420,7 +421,7 @@ func concurrentDeriveChilds(vaultCount int, chains []string, rootKeys *common.Ro
 
 func deriveVaultChild(vaultCount int, chainName string, rootKeys *common.RootKeys) ([]*DeriveResult, error) {
 	deriveResult := make([]*DeriveResult, 0)
-	coinInfo, _ := common.ChainInfos[chainName]
+	coinInfo := common.ChainInfos[chainName]
 
 	for vaultIndex := 0; vaultIndex < vaultCount; vaultIndex++ {
 		hdPath := fmt.Sprintf(AssetWalletPath, vaultIndex, coinInfo.CoinType) // Only support asset wallet for now

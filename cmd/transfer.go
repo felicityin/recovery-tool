@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"recovery-tool/tx/apt"
 	"recovery-tool/tx/dot"
 	"recovery-tool/tx/sol"
+	"recovery-tool/tx/ton"
 )
 
 func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, error) {
@@ -82,6 +84,27 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 			return "", err
 		}
 		return txHash, nil
+	case "ton":
+		if url == SolNode || url == "" {
+			url = TonNode
+		}
+		ton := ton.NewTon(url)
+		txHash, err := ton.Transfer(coinAddress, priv, toAddr, amountDec)
+		if err != nil {
+			if strings.Contains(err.Error(), "get status code: 429") {
+				return "", fmt.Errorf("Using API without API key is limited to 1 request per second. Register your API key in the https://toncenter.com to get access with higher limits.")
+			}
+			if strings.Contains(err.Error(), "failed to run get_wallet_address method") {
+				return "", fmt.Errorf("The counterparty contract address does not exist, please re-enter it.")
+			}
+			return "", fmt.Errorf("[ton] transfer err: %s", err.Error())
+		}
+		fmt.Printf("tx hash: %s\n", txHash)
+		txId, err := base64.StdEncoding.DecodeString(txHash)
+		if err != nil {
+			return "", fmt.Errorf("base64 decode tx hash err: %s", err.Error())
+		}
+		return hex.EncodeToString(txId), nil
 	default:
 		return "", code.NewI18nError(code.ChainParamErr, fmt.Sprintf("Unsupported chain: %s", chain))
 	}
@@ -95,6 +118,8 @@ func Scan(chain string) string {
 		return AptScan
 	case "dot":
 		return DotScan
+	case "ton":
+		return TonScan
 	default:
 		return ""
 	}

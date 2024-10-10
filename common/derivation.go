@@ -95,45 +95,6 @@ func DeriveAddress(privKey *big.Int, hdPath string, coin int) (string, error) {
 	}
 }
 
-func SwitchCoin(coinType uint32) string {
-	var chain string
-
-	switch coinType + Zero {
-	case BTC:
-		chain = "btc"
-	case LTC:
-		chain = "ltc"
-	case DOGE:
-		chain = "doge"
-	case ETH:
-		chain = "eth"
-	case BCH:
-		chain = "bch"
-	//case DASH:
-	//	chain = "dash"
-	case TRX:
-		chain = "trx"
-	case HECO:
-		chain = "eth"
-	case BSC:
-		chain = "eth"
-	case POLYGON:
-		chain = "eth"
-	case ARBITRUM:
-		chain = "eth"
-	case SOL:
-		chain = "sol"
-	case Apt:
-		chain = "apt"
-	case Dot:
-		chain = "dot"
-	default:
-		panic("invalid chain type")
-	}
-
-	return chain
-}
-
 func deriveChildPrivKey(key *RootKey, hdPath string, deducePubKey *crypto.ECPoint, coin int) (*big.Int, *big.Int, error) {
 	var buf [32]byte
 	privKeyBytes := key.PrivKey.FillBytes(buf[:])
@@ -187,10 +148,5 @@ func DeriveEddsaChildPrivKey(
 }
 
 func isEddsaCoin(coin int) bool {
-	return coin == 354 || coin == 501 || coin == 637
-}
-
-func isEthAddress(chain string) bool {
-	return chain == EthereumChain || chain == BSCChain || chain == HecoChain || chain == PolygonChain ||
-		chain == ArbitrumChain || chain == BaseChain
+	return coin == 354 || coin == 501 || coin == 637 || coin == 607
 }

@@ -12,16 +12,19 @@ import (
 	"recovery-tool/tx/apt"
 	"recovery-tool/tx/dot"
 	"recovery-tool/tx/sol"
+	"recovery-tool/tx/ton"
 )
 
 const (
 	SolScan = "https://solscan.io/tx"
 	AptScan = "https://aptoscan.com/transaction"
 	DotScan = "https://polkadot.subscan.io/extrinsic"
+	TonScan = "https://tonviewer.com/transaction"
 
 	SolNode = "https://api.mainnet-beta.solana.com"
 	AptNode = "https://fullnode.mainnet.aptoslabs.com"
-	DotNode = "https://polkadot-public-sidecar.parity-chains.parity.io"
+	DotNode = "https://polkadot-asset-hub-public-sidecar.parity-chains.parity.io"
+	TonNode = "https://toncenter.com"
 )
 
 type BalanceResult struct {
@@ -104,6 +107,33 @@ func GetBalance(chain, url, addr, coinAddress string) (*BalanceResult, error) {
 			Decimals: "10",
 			Amount:   amount,
 		}, nil
+	case "ton":
+		if url == SolNode || url == "" {
+			url = TonNode
+		}
+		ton := ton.NewTon(url)
+		if coinAddress == "" {
+			balance, amount, err := ton.Balance(addr)
+			if err != nil {
+				return nil, fmt.Errorf("get balance err: %s", err.Error())
+			}
+			return &BalanceResult{
+				Balance:  balance,
+				Decimals: "9",
+				Amount:   fmt.Sprintf("%v", amount),
+			}, nil
+		} else {
+			ton.ContractAddress = coinAddress
+			decimals, balance, amount, err := ton.BalanceOf(addr)
+			if err != nil {
+				return nil, fmt.Errorf("get balance err: %s", err.Error())
+			}
+			return &BalanceResult{
+				Balance:  balance,
+				Decimals: fmt.Sprintf("%d", decimals),
+				Amount:   fmt.Sprintf("%v", amount),
+			}, nil
+		}
 	default:
 		return nil, code.NewI18nError(code.ChainParamErr, fmt.Sprintf("Unsupported chain: %s", chain))
 	}
@@ -117,6 +147,8 @@ func ShortChainName(chain string) string {
 		return "apt"
 	case common.PolkadotChain:
 		return "dot"
+	case common.TonChain:
+		return "ton"
 	default:
 		return ""
 	}

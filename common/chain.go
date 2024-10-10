@@ -16,6 +16,7 @@ import (
 	addr "github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/portto/aptos-go-sdk/crypto"
 	"github.com/portto/aptos-go-sdk/models"
+	"github.com/xssnick/tonutils-go/ton/wallet"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -58,6 +59,7 @@ const (
 	SUI       = Zero + 784
 	SOL       = Zero + 501
 	DOT       = Zero + 354
+	TON       = Zero + 607
 )
 
 type Option struct {
@@ -81,6 +83,7 @@ const (
 	AptostChain      = "Aptos"
 	SolanaChain      = "Solana"
 	BaseChain        = "Base Chain"
+	TonChain         = "Ton"
 )
 
 var ChainList = []*Option{
@@ -139,6 +142,10 @@ var ChainList = []*Option{
 	{
 		Name: BaseChain,
 		Val:  BaseChain,
+	},
+	{
+		Name: TonChain,
+		Val:  TonChain,
 	},
 }
 
@@ -206,12 +213,57 @@ var ChainInfos = map[string]CoinInfo{
 		SignKind: SignKindEddsa,
 		CoinType: DOT,
 	},
+	TonChain: CoinInfo{
+		SignKind: SignKindEddsa,
+		CoinType: TON,
+	},
 }
 
 var ss58Prefix = []byte("SS58PRE")
 var DOTNetWorkByteMap = map[string]byte{
 	"DOT": 0x00,
 	"KSM": 0x00,
+}
+
+func SwitchCoin(coinType uint32) string {
+	var chain string
+
+	switch coinType + Zero {
+	case BTC:
+		chain = "btc"
+	case LTC:
+		chain = "ltc"
+	case DOGE:
+		chain = "doge"
+	case ETH:
+		chain = "eth"
+	case BCH:
+		chain = "bch"
+	//case DASH:
+	//	chain = "dash"
+	case TRX:
+		chain = "trx"
+	case HECO:
+		chain = "eth"
+	case BSC:
+		chain = "eth"
+	case POLYGON:
+		chain = "eth"
+	case ARBITRUM:
+		chain = "eth"
+	case SOL:
+		chain = "sol"
+	case Apt:
+		chain = "apt"
+	case Dot:
+		chain = "dot"
+	case TON:
+		chain = "ton"
+	default:
+		panic("invalid chain type")
+	}
+
+	return chain
 }
 
 func SwitchEcdsaChainAddress(ecdsaPk *ecdsa.PublicKey, chain string) (string, error) {
@@ -423,6 +475,12 @@ func SwitchEddsaChainAddress(publicKey *edwards.PublicKey, chain string) (addres
 		if err != nil {
 			return "", err
 		}
+	case "ton":
+		address, err := wallet.AddressFromPubKey(publicKey.Serialize(), wallet.V3, wallet.DefaultSubwallet)
+		if err != nil {
+			return "", err
+		}
+		return address.String(), nil
 	default:
 		return "", fmt.Errorf("eddsa unsupport chain type: %s", chain)
 	}
