@@ -83,7 +83,7 @@ const (
 	AptostChain      = "Aptos"
 	SolanaChain      = "Solana"
 	BaseChain        = "Base Chain"
-	TonChain         = "Ton"
+	TonChain         = "TON"
 )
 
 var ChainList = []*Option{

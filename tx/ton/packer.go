@@ -18,6 +18,7 @@ import (
 	"github.com/xssnick/tonutils-go/tvm/cell"
 
 	"recovery-tool/common"
+	"recovery-tool/common/code"
 	"recovery-tool/tx/eddsa"
 )
 
@@ -110,13 +111,17 @@ func (p *tonPackager) Pack(
 	messages := make([]*wallet.Message, 0)
 
 	if p.coin == "" {
+		dstAddr, err := MustParseAddr(p.toAddr)
+		if err != nil {
+			return code.NewI18nError(code.DstAddrInvalid, "Dest address is invalid")
+		}
 		message := &wallet.Message{
 			Mode: 1, // pay fees separately (from balance, not from amount)
 			InternalMessage: &tlb.InternalMessage{
 				IHRDisabled: true,
 				Bounce:      false, // return amount in case of processing error
 				Bounced:     true,
-				DstAddr:     address.MustParseAddr(p.toAddr),
+				DstAddr:     dstAddr,
 				Amount:      tlb.FromNanoTON(amountInt),
 				Body:        memo,
 			},
@@ -140,18 +145,25 @@ func (p *tonPackager) Pack(
 			return err
 		}
 		rnd := binary.LittleEndian.Uint64(buf)
-		to := address.MustParseAddr(p.toAddr)
+		to, err := MustParseAddr(p.toAddr)
+		if err != nil {
+			return code.NewI18nError(code.DstAddrInvalid, "Dest address is invalid")
+		}
 		var commentCell *cell.Cell
 		commentCell, err = wallet.CreateCommentCell(memoStr)
 		if err != nil {
 			return fmt.Errorf("ton pack faile, CreateCommentCell err: %s", err.Error())
+		}
+		responseAddr, err := MustParseAddr(p.fromAddr)
+		if err != nil {
+			code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
 		}
 		body, err1 := tlb.ToCell(jetton.TransferPayload{
 			QueryID:     rnd,
 			Amount:      tlb.FromNanoTON(amountInt),
 			Destination: to,
 			//address where to send a response with confirmation of a successful burn and the rest of the incoming message coins.
-			ResponseDestination: address.MustParseAddr(p.fromAddr),
+			ResponseDestination: responseAddr,
 			CustomPayload:       nil,
 			ForwardTONAmount:    tlb.FromNanoTON(new(big.Int).SetInt64(forwardFee)),
 			ForwardPayload:      commentCell,
@@ -159,13 +171,17 @@ func (p *tonPackager) Pack(
 		if err1 != nil {
 			return fmt.Errorf("ton pack faile, ToCell err: %s", err1.Error())
 		}
+		dstAddr, err := MustParseAddr(jettonAddress)
+		if err != nil {
+			code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
+		}
 		message := &wallet.Message{
 			Mode: 1,
 			InternalMessage: &tlb.InternalMessage{
 				IHRDisabled: true,
 				Bounce:      false,
 				//jetton wallet address
-				DstAddr: address.MustParseAddr(jettonAddress),
+				DstAddr: dstAddr,
 				Amount:  tlb.FromNanoTON(new(big.Int).SetInt64(fee64)),
 				Body:    body,
 			},
@@ -202,4 +218,12 @@ func (p *tonPackager) GetRaw() (*cell.Cell, error) {
 
 func (p *tonPackager) NotActive() bool {
 	return p.notActive
+}
+
+func MustParseAddr(addr string) (*address.Address, error) {
+	a, err := address.ParseAddr(addr)
+	if err != nil {
+		return nil, err
+	}
+	return a, nil
 }

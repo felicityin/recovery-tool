@@ -43,6 +43,7 @@ var (
 	AptInsufficientFunds   = "613"
 	DotInsufficientFunds   = "614"
 	NetworkErr             = "615"
+	TonNetworkErr          = "616"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -85,6 +86,7 @@ var I18nMessage = map[string]map[string]string{
 		AptInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.002 apt).",
 		DotInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 1 dot).",
 		NetworkErr:             "Network error, please try again later.",
+		TonNetworkErr:          "Using API without API key is limited to 1 request per second. Register your API key in the https://toncenter.com to get access with higher limits.",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -125,6 +127,7 @@ var I18nMessage = map[string]map[string]string{
 		AptInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 0.002 apt)",
 		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot)",
 		NetworkErr:             "网络错误，请稍后重试",
+		TonNetworkErr:          "未使用 API 密钥的情况下，每秒仅限发出 1 次请求。请在 https://toncenter.com 注册您的 API 密钥，以获得更高的访问频次限制",
 	},
 }
 

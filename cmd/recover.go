@@ -168,7 +168,7 @@ func checkParams(params RecoveryInput) (err error) {
 		}
 		chains := make([]string, len(chainMap))
 		i := 0
-		for chainName, _ := range chainMap {
+		for chainName := range chainMap {
 			chains[i] = strings.TrimSpace(chainName)
 			i++
 		}

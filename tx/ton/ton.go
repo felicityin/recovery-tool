@@ -9,7 +9,6 @@ import (
 
 	"github.com/ipfs/go-log"
 	"github.com/shopspring/decimal"
-	"github.com/xssnick/tonutils-go/address"
 	"github.com/xssnick/tonutils-go/liteclient"
 	"github.com/xssnick/tonutils-go/tlb"
 	"github.com/xssnick/tonutils-go/ton"
@@ -19,6 +18,7 @@ import (
 	"github.com/xssnick/tonutils-go/tvm/cell"
 
 	cm "recovery-tool/common"
+	"recovery-tool/common/code"
 	"recovery-tool/tx/eddsa"
 )
 
@@ -69,7 +69,7 @@ func (this *Ton) Balance(address string) (string, decimal.Decimal, error) {
 }
 
 func (this *Ton) BalanceOf(address string) (decimals int, amount string, balance decimal.Decimal, err error) {
-	this.ContractDecimals, err = this.GetTokenDeciamals()
+	this.ContractDecimals, err = this.GetTokenDecimals()
 	if err != nil {
 		this.log.Errorf("GetTokenDeciamals err: %s", err.Error())
 		return
@@ -92,7 +92,7 @@ func (this *Ton) BalanceOf(address string) (decimals int, amount string, balance
 	if len(jettonBal.JettonWallets) == 0 {
 		return 0, amount, balance, fmt.Errorf("no jettonBalance result, %s-%s-%s", address, this.ContractAddress, this.tokenAccount)
 	}
-	balance, err = decimal.NewFromString(jettonBal.JettonWallets[0].Balance)
+	balance, _ = decimal.NewFromString(jettonBal.JettonWallets[0].Balance)
 	balance = balance.Div(decimal.NewFromFloat(math.Pow10(int(this.ContractDecimals))))
 	return this.ContractDecimals, jettonBal.JettonWallets[0].Balance, balance, nil
 }
@@ -103,7 +103,7 @@ func (c *Ton) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 	from, err := wallet.AddressFromPubKey(pubkey, wallet.V3, wallet.DefaultSubwallet)
 	if err != nil {
 		c.log.Errorf("gen addr err: %s", err.Error())
-		return
+		return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
 	}
 	fromAddr := from.String()
 	c.log.Infof("from: %s", fromAddr)
@@ -134,9 +134,9 @@ func (c *Ton) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 
 	if coinAddress != "" {
 		c.ContractAddress = coinAddress
-		c.ContractDecimals, err = c.GetTokenDeciamals()
+		c.ContractDecimals, err = c.GetTokenDecimals()
 		if err != nil {
-			c.log.Errorf("GetTokenDeciamals err: %", err.Error())
+			c.log.Errorf("GetTokenDeciamals err: %s", err.Error())
 			return
 		}
 
@@ -187,8 +187,13 @@ func (c *Ton) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 		}
 	}
 
+	fromAddress, err := MustParseAddr(fromAddr)
+	if err != nil {
+		return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
+	}
+
 	externalMessage := &tlb.ExternalMessage{
-		DstAddr:   address.MustParseAddr(fromAddr),
+		DstAddr:   fromAddress,
 		StateInit: stateInit,
 		Body:      msg,
 	}
@@ -214,34 +219,44 @@ func (c *Ton) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 	return txHash, nil
 }
 
-func (this *Ton) GetTokenDeciamals() (int, error) {
-	tokenContract := address.MustParseAddr(this.ContractAddress)
+func (this *Ton) GetTokenDecimals() (int, error) {
+	tokenContract, err := MustParseAddr(this.ContractAddress)
+	if err != nil {
+		return 0, code.NewI18nError(code.CoinAddrInvalid, "The token contract address format is wrong, please re-enter.")
+	}
 	master := jetton.NewJettonMasterClient(this.ApiClient, tokenContract)
 
 	data, err := master.GetJettonData(context.Background())
 	if err != nil {
 		this.log.Errorf("GetJettonData err: %s", err.Error())
-		return 0, err
+		return 0, code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 	}
 
 	content := data.Content.(*nft.ContentSemichain).ContentOnchain
 	decimals, err := strconv.Atoi(content.GetAttribute("decimals"))
 	if err != nil {
 		this.log.Errorf("invalid decimals: %s", err.Error())
+		return 0, code.NewI18nError(code.CoinAddrNotExists, "The counterparty contract address does not exist, please re-enter it.")
 	}
 	return decimals, nil
 }
 
 func (this *Ton) GetTokenAddr(addr string) (string, error) {
-	tokenContract := address.MustParseAddr(this.ContractAddress)
+	tokenContract, err := MustParseAddr(this.ContractAddress)
+	if err != nil {
+		return "", code.NewI18nError(code.CoinAddrInvalid, "The token contract address format is wrong, please re-enter.")
+	}
 	master := jetton.NewJettonMasterClient(this.ApiClient, tokenContract)
 
-	tokenWallet, err := master.GetJettonWallet(context.Background(), address.MustParseAddr(addr))
+	addre, err := MustParseAddr(addr)
+	if err != nil {
+		return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
+	}
+	tokenWallet, err := master.GetJettonWallet(context.Background(), addre)
 	if err != nil {
 		this.log.Errorf("GetJettonWallet err: %s", err.Error())
 		return "", err
 	}
-
 	return tokenWallet.Address().String(), nil
 }
 

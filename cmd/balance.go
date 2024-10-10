@@ -43,7 +43,7 @@ func GetBalance(chain, url, addr, coinAddress string) (*BalanceResult, error) {
 		return nil, code.NewI18nError(code.SrcAddrNotEmpty, "The address cannot be empty")
 	}
 
-	if chain != "sol" && coinAddress != "" {
+	if chain != "sol" && chain != "ton" && coinAddress != "" {
 		return nil, code.NewI18nError(code.CoinUnsupported, "This chain only supports main chain coins for now")
 	}
 

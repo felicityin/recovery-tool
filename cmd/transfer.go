@@ -19,7 +19,7 @@ import (
 func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, error) {
 	priv, err := hex.DecodeString(privkey)
 	if err != nil {
-		return "", code.NewI18nError(code.PrivkeyInvalid, "The private key should be in hexadecimal format")
+		return "", code.NewI18nError(code.PrivkeyInvalid, "The private key format is wrong, please re-enter.")
 	}
 
 	if toAddr == "" {
@@ -31,7 +31,8 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 		return "", code.NewI18nError(code.AmountInvalid, "Unable to convert transfer amount to decimal")
 	}
 
-	if chain != "sol" && coinAddress != "" {
+	if chain != "sol" && chain != "ton" && coinAddress != "" {
+		common.Logger.Errorf("chain: %s", chain)
 		return "", code.NewI18nError(code.CoinUnsupported, "This chain only supports main chain coins for now")
 	}
 
@@ -91,13 +92,17 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 		ton := ton.NewTon(url)
 		txHash, err := ton.Transfer(coinAddress, priv, toAddr, amountDec)
 		if err != nil {
+			common.Logger.Errorf("[ton] transfer err: %s", err.Error())
 			if strings.Contains(err.Error(), "get status code: 429") {
-				return "", fmt.Errorf("Using API without API key is limited to 1 request per second. Register your API key in the https://toncenter.com to get access with higher limits.")
+				return "", code.NewI18nError(code.TonNetworkErr, "Using API without API key is limited to 1 request per second. Register your API key in the https://toncenter.com to get access with higher limits.")
+			}
+			if strings.Contains(err.Error(), "get status code: 500") {
+				return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
 			}
 			if strings.Contains(err.Error(), "failed to run get_wallet_address method") {
-				return "", fmt.Errorf("The counterparty contract address does not exist, please re-enter it.")
+				return "", code.NewI18nError(code.CoinAddrNotExists, "The counterparty contract address does not exist, please re-enter it.")
 			}
-			return "", fmt.Errorf("[ton] transfer err: %s", err.Error())
+			return "", err
 		}
 		fmt.Printf("tx hash: %s\n", txHash)
 		txId, err := base64.StdEncoding.DecodeString(txHash)
