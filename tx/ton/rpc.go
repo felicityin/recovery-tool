@@ -84,6 +84,9 @@ func (this Client) BroadCast(rawTX string) (txRes *SendTxResult, err error) {
 		if strings.Contains(err.Error(), "Failed to unpack account state MessageHas") {
 			return nil, code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
 		}
+		if strings.Contains(res.Error, "unhandled out-of-gas exception") {
+			return nil, code.NewI18nError(code.TonInsufficientFunds, "Insufficient gas fee (the current maximum transaction fee on the chain is 0.06 ton).")
+		}
 		return nil, err
 	}
 	return &res, nil
