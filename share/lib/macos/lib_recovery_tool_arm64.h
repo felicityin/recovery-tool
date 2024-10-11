@@ -85,6 +85,9 @@ extern char* GetChainList1();
 extern RSResult GetChainList();
 extern char* MacGetChainList();
 extern RSResult GoRecovery(GoString zipPath, GoString userMnemonic, GoString eciesPrivKey, GoString rsaPrivKeyPath, GoString vaultCount, GoString chains, GoString language);
+extern RSResult GoBalance(GoString chain, GoString url, GoString addr, GoString coinAddress, GoString language);
+extern RSResult GoSign(GoString chain, GoString url, GoString privkey, GoString toAddr, GoString amount, GoString coinAddress, GoString language);
+extern RSResult GoTransfer(GoString chain, GoString url, GoString privkey, GoString toAddr, GoString amount, GoString coinAddress, GoString language);
 
 #ifdef __cplusplus
 }
