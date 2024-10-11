@@ -96,9 +96,6 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 			if strings.Contains(err.Error(), "get status code: 429") {
 				return "", code.NewI18nError(code.TonNetworkErr, "Using API without API key is limited to 1 request per second. Register your API key in the https://toncenter.com to get access with higher limits.")
 			}
-			if strings.Contains(err.Error(), "get status code: 500") {
-				return "", code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
-			}
 			if strings.Contains(err.Error(), "failed to run get_wallet_address method") {
 				return "", code.NewI18nError(code.CoinAddrNotExists, "The counterparty contract address does not exist, please re-enter it.")
 			}

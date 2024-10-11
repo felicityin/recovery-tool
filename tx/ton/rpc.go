@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"recovery-tool/common"
+	"recovery-tool/common/code"
 )
 
 func (this Client) Getblockchaininfo() (block *MasterBlockChainInfo, err error) {
@@ -80,6 +81,9 @@ func (this Client) BroadCast(rawTX string) (txRes *SendTxResult, err error) {
 	params.Boc = string(rawTXByte)
 	if err = this.PostRequest(context.TODO(), url, params, &res); err != nil {
 		common.Logger.Errorf("post err: %s, res: %+v", err.Error(), res)
+		if strings.Contains(err.Error(), "Failed to unpack account state MessageHas") {
+			return nil, code.NewI18nError(code.SrcAccountNotFound, "The sending account does not exist, please check and try again")
+		}
 		return nil, err
 	}
 	return &res, nil
