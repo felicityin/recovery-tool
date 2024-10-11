@@ -62,6 +62,10 @@ const (
 	TON       = Zero + 607
 )
 
+func isEddsaCoin(coin int) bool {
+	return coin == 354 || coin == 501 || coin == 637 || coin == 607
+}
+
 type Option struct {
 	Name string `json:"name"`
 	Val  string `json:"val"`

@@ -146,7 +146,3 @@ func DeriveEddsaChildPrivKey(
 	}
 	return childPrivKey, childPubKey, nil
 }
-
-func isEddsaCoin(coin int) bool {
-	return coin == 354 || coin == 501 || coin == 637 || coin == 607
-}
