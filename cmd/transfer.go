@@ -16,7 +16,7 @@ import (
 	"recovery-tool/tx/ton"
 )
 
-func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, error) {
+func Transfer(chain, url, privkey, toAddr, amount, coinAddress, memo string) (string, error) {
 	priv, err := hex.DecodeString(privkey)
 	if err != nil {
 		return "", code.NewI18nError(code.PrivkeyInvalid, "The private key format is wrong, please re-enter.")
@@ -90,7 +90,7 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 			url = TonNode
 		}
 		ton := ton.NewTon(url)
-		txHash, err := ton.Transfer(coinAddress, priv, toAddr, amountDec)
+		txHash, err := ton.Transfer(coinAddress, priv, toAddr, amountDec, memo)
 		if err != nil {
 			common.Logger.Errorf("[ton] transfer err: %s", err.Error())
 			if strings.Contains(err.Error(), "get status code: 429") {

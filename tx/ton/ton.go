@@ -97,7 +97,7 @@ func (this *Ton) BalanceOf(address string) (decimals int, amount string, balance
 	return this.ContractDecimals, jettonBal.JettonWallets[0].Balance, balance, nil
 }
 
-func (c *Ton) Transfer(coinAddress string, privkey []byte, toAddr string, amountDec decimal.Decimal) (txHash string, err error) {
+func (c *Ton) Transfer(coinAddress string, privkey []byte, toAddr string, amountDec decimal.Decimal, memo string) (txHash string, err error) {
 	pubkey := eddsa.Pubkey(privkey).Serialize()
 
 	from, err := wallet.AddressFromPubKey(pubkey, wallet.V3, wallet.DefaultSubwallet)
@@ -129,7 +129,7 @@ func (c *Ton) Transfer(coinAddress string, privkey []byte, toAddr string, amount
 		"nonce":     nonce,
 		"is_active": account.IsActive,
 		"status":    account.Status,
-		"memo":      "",
+		"memo":      memo,
 	}
 
 	if coinAddress != "" {

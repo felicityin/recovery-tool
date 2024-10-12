@@ -169,8 +169,8 @@ func GoSign(chain, url, privkey, toAddr, amount, coinAddress, language string) C
 }
 
 //export GoTransfer
-func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language string) C.RSResult {
-	txHash, err := cmd.Transfer(cmd.ShortChainName(chain), url, privkey, toAddr, amount, coinAddress)
+func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language string, memo string) C.RSResult {
+	txHash, err := cmd.Transfer(cmd.ShortChainName(chain), url, privkey, toAddr, amount, coinAddress, memo)
 
 	if err != nil {
 		var errMsg string
