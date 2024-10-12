@@ -36,13 +36,13 @@ type Ton struct {
 	log              *log.ZapEventLogger
 }
 
-func NewTon(url string) *Ton {
+func NewTon(url string) (*Ton, error) {
 	client := liteclient.NewConnectionPool()
 
 	// connect to testnet lite server
 	err := client.AddConnectionsFromConfigUrl(context.Background(), "https://ton.org/global.config.json")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// initialize ton api lite connection wrapper
@@ -54,7 +54,7 @@ func NewTon(url string) *Ton {
 		Decimals:  9,
 		log:       cm.Logger,
 	}
-	return ton
+	return ton, nil
 }
 
 func (this *Ton) Balance(address string) (string, decimal.Decimal, error) {

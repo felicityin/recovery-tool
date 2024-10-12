@@ -111,7 +111,11 @@ func GetBalance(chain, url, addr, coinAddress string) (*BalanceResult, error) {
 		if url == SolNode || url == "" {
 			url = TonNode
 		}
-		ton := ton.NewTon(url)
+		ton, err := ton.NewTon(url)
+		if err != nil {
+			common.Logger.Errorf("[ton] create ton client err: %s", err.Error())
+			return nil, err
+		}
 		if coinAddress == "" {
 			balance, amount, err := ton.Balance(addr)
 			if err != nil {

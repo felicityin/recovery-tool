@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/shopspring/decimal"
@@ -89,7 +90,14 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress, memo string) (st
 		if url == SolNode || url == "" {
 			url = TonNode
 		}
-		ton := ton.NewTon(url)
+		if !isMemoOk(memo) {
+			return "", code.NewI18nError(code.TonMemoInvalid, "Memo format error, please enter numbers or letters within 30 characters.")
+		}
+		ton, err := ton.NewTon(url)
+		if err != nil {
+			common.Logger.Errorf("[ton] create ton client err: %s", err.Error())
+			return "", code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
+		}
 		txHash, err := ton.Transfer(coinAddress, priv, toAddr, amountDec, memo)
 		if err != nil {
 			common.Logger.Errorf("[ton] transfer err: %s", err.Error())
@@ -114,6 +122,16 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress, memo string) (st
 	default:
 		return "", code.NewI18nError(code.ChainParamErr, fmt.Sprintf("Unsupported chain: %s", chain))
 	}
+}
+
+func isMemoOk(memo string) bool {
+	if len(memo) > 30 {
+		return false
+	}
+	if match, _ := regexp.MatchString("^[a-zA-Z0-9]+$", memo); match {
+		return true
+	}
+	return false
 }
 
 func Scan(chain string) string {

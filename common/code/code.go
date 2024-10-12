@@ -45,6 +45,7 @@ var (
 	NetworkErr             = "615"
 	TonNetworkErr          = "616"
 	TonInsufficientFunds   = "617"
+	TonMemoInvalid         = "618"
 )
 
 var I18nMessage = map[string]map[string]string{
@@ -89,6 +90,7 @@ var I18nMessage = map[string]map[string]string{
 		NetworkErr:             "Network error, please try again later.",
 		TonNetworkErr:          "Using API without API key is limited to 1 request per second. Register your API key in the https://toncenter.com to get access with higher limits.",
 		TonInsufficientFunds:   "Insufficient gas fee (the current maximum transaction fee on the chain is 0.06 ton).",
+		TonMemoInvalid:         "Memo format error, please enter numbers or letters within 30 characters.",
 	},
 	"zh": {
 		"fail_prefix":             "恢复失败：",
@@ -130,6 +132,7 @@ var I18nMessage = map[string]map[string]string{
 		DotInsufficientFunds:   "网络费用不足（当前链上最大交易手续费为 1 dot)",
 		NetworkErr:             "网络错误，请稍后重试",
 		TonNetworkErr:          "未使用 API 密钥的情况下，每秒仅限发出 1 次请求。请在 https://toncenter.com 注册您的 API 密钥，以获得更高的访问频次限制",
+		TonMemoInvalid:         "MEMO 格式错误, 请输入30个字符以内的数字或字母?",
 	},
 }
 
