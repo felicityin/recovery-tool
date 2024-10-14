@@ -128,7 +128,7 @@ func isMemoOk(memo string) bool {
 	if len(memo) > 30 {
 		return false
 	}
-	if match, _ := regexp.MatchString("^[a-zA-Z0-9]+$", memo); match {
+	if match, _ := regexp.MatchString("^[a-zA-Z0-9]*$", memo); match {
 		return true
 	}
 	return false
