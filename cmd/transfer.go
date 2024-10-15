@@ -107,8 +107,9 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress, memo string) (st
 			if strings.Contains(err.Error(), "failed to run get_wallet_address method") {
 				return "", code.NewI18nError(code.CoinAddrNotExists, "The counterparty contract address does not exist, please re-enter it.")
 			}
-			if strings.Contains(err.Error(), "server misbehaving") || strings.Contains(err.Error(), "no such host") ||
-				strings.Contains(err.Error(), "no Host in request URL") || strings.Contains(err.Error(), "get status code: 502") {
+			if strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "server misbehaving") ||
+				strings.Contains(err.Error(), "no such host") || strings.Contains(err.Error(), "no Host in request URL") ||
+				strings.Contains(err.Error(), "get status code: 502") {
 				return "", code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
 			}
 			return "", err
