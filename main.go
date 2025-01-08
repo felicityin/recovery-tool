@@ -28,6 +28,7 @@ func main() {
 	coinAddress := transferCmd.String("coin", "", "Coin contract address. For sol, refer to https://solscan.io/leaderboard/token")
 	chainName := transferCmd.String("chain", "sol", "Chain name, can be sol, apt or dot")
 	chainUrl := transferCmd.String("url", "https://api.mainnet-beta.solana.com", "url")
+	memo := transferCmd.String("memo", "", "Memo")
 
 	if len(os.Args) < 2 {
 		fmt.Println("expected 'recover', 'balance' or 'transfer' subcommands")
@@ -60,7 +61,7 @@ func main() {
 	case "transfer":
 		transferCmd.Parse(os.Args[2:])
 
-		txHash, err := cmd.Transfer(*chainName, *chainUrl, *fromkey, *toAddress, *amount, *coinAddress)
+		txHash, err := cmd.Transfer(*chainName, *chainUrl, *fromkey, *toAddress, *amount, *coinAddress, *memo)
 		if err != nil {
 			common.Logger.Errorf("%s", err)
 			os.Exit(1)

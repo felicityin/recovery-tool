@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/shopspring/decimal"
@@ -12,12 +14,13 @@ import (
 	"recovery-tool/tx/apt"
 	"recovery-tool/tx/dot"
 	"recovery-tool/tx/sol"
+	"recovery-tool/tx/ton"
 )
 
-func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, error) {
+func Transfer(chain, url, privkey, toAddr, amount, coinAddress, memo string) (string, error) {
 	priv, err := hex.DecodeString(privkey)
 	if err != nil {
-		return "", code.NewI18nError(code.PrivkeyInvalid, "The private key should be in hexadecimal format")
+		return "", code.NewI18nError(code.PrivkeyInvalid, "The private key format is wrong, please re-enter.")
 	}
 
 	if toAddr == "" {
@@ -29,7 +32,8 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 		return "", code.NewI18nError(code.AmountInvalid, "Unable to convert transfer amount to decimal")
 	}
 
-	if chain != "sol" && coinAddress != "" {
+	if chain != "sol" && chain != "ton" && coinAddress != "" {
+		common.Logger.Errorf("chain: %s", chain)
 		return "", code.NewI18nError(code.CoinUnsupported, "This chain only supports main chain coins for now")
 	}
 
@@ -82,9 +86,53 @@ func Transfer(chain, url, privkey, toAddr, amount, coinAddress string) (string, 
 			return "", err
 		}
 		return txHash, nil
+	case "ton":
+		if url == SolNode || url == "" {
+			url = TonNode
+		}
+		if !isMemoOk(memo) {
+			return "", code.NewI18nError(code.TonMemoInvalid, "Memo format error, please enter numbers or letters within 30 characters.")
+		}
+		ton, err := ton.NewTon(url)
+		if err != nil {
+			common.Logger.Errorf("[ton] create ton client err: %s", err.Error())
+			return "", code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
+		}
+		txHash, err := ton.Transfer(coinAddress, priv, toAddr, amountDec, memo)
+		if err != nil {
+			common.Logger.Errorf("[ton] transfer err: %s", err.Error())
+			if strings.Contains(err.Error(), "get status code: 429") {
+				return "", code.NewI18nError(code.TonNetworkErr, "Using API without API key is limited to 1 request per second. Register your API key in the https://toncenter.com to get access with higher limits.")
+			}
+			if strings.Contains(err.Error(), "failed to run get_wallet_address method") {
+				return "", code.NewI18nError(code.CoinAddrNotExists, "The counterparty contract address does not exist, please re-enter it.")
+			}
+			if strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "server misbehaving") ||
+				strings.Contains(err.Error(), "no such host") || strings.Contains(err.Error(), "no Host in request URL") ||
+				strings.Contains(err.Error(), "get status code: 502") {
+				return "", code.NewI18nError(code.NetworkErr, "Network error, please try again later.")
+			}
+			return "", err
+		}
+		fmt.Printf("tx hash: %s\n", txHash)
+		txId, err := base64.StdEncoding.DecodeString(txHash)
+		if err != nil {
+			return "", fmt.Errorf("base64 decode tx hash err: %s", err.Error())
+		}
+		return hex.EncodeToString(txId), nil
 	default:
 		return "", code.NewI18nError(code.ChainParamErr, fmt.Sprintf("Unsupported chain: %s", chain))
 	}
+}
+
+func isMemoOk(memo string) bool {
+	if len(memo) > 30 {
+		return false
+	}
+	if match, _ := regexp.MatchString("^[a-zA-Z0-9]*$", memo); match {
+		return true
+	}
+	return false
 }
 
 func Scan(chain string) string {
@@ -95,6 +143,8 @@ func Scan(chain string) string {
 		return AptScan
 	case "dot":
 		return DotScan
+	case "ton":
+		return TonScan
 	default:
 		return ""
 	}

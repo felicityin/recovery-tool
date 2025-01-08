@@ -14,7 +14,7 @@ require (
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412
 	github.com/btcsuite/btcd/btcec v0.0.0-00010101000000-000000000000
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 )
 
 require (
@@ -41,6 +41,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/the729/lcs v0.1.5
 	github.com/tidwall/gjson v1.2.1
+	github.com/xssnick/tonutils-go v1.10.2
 )
 
 require (
@@ -55,10 +56,12 @@ require (
 	github.com/holiman/uint256 v1.2.3 // indirect
 	github.com/ipfs/go-log/v2 v2.1.3 // indirect
 	github.com/klauspost/compress v1.16.0 // indirect
+	github.com/oasisprotocol/curve25519-voi v0.0.0-20220328075252-7dd334e3daae // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/phoreproject/bls v0.0.0-20200525203911-a88a5ae26844 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/shengdoushi/base58 v1.0.0 // indirect
+	github.com/sigurn/crc16 v0.0.0-20211026045750-20ab5afb07e3 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/tidwall/match v1.0.1 // indirect
 	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect

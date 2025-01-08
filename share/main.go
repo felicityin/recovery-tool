@@ -169,8 +169,8 @@ func GoSign(chain, url, privkey, toAddr, amount, coinAddress, language string) C
 }
 
 //export GoTransfer
-func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language string) C.RSResult {
-	txHash, err := cmd.Transfer(cmd.ShortChainName(chain), url, privkey, toAddr, amount, coinAddress)
+func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language string, memo string) C.RSResult {
+	txHash, err := cmd.Transfer(cmd.ShortChainName(chain), url, privkey, toAddr, amount, coinAddress, memo)
 
 	if err != nil {
 		var errMsg string
@@ -193,45 +193,6 @@ func GoTransfer(chain, url, privkey, toAddr, amount, coinAddress, language strin
 		ok:     C.TRUE,
 	}
 }
-
-//func GoRecoveryTest(zipPath, userMnemonic, eciesPrivKey, rsaPrivKeyPath, vaultCount, chains, language string) (err error) {
-//	vaultCountInt, err := strconv.Atoi(vaultCount)
-//	if err != nil {
-//		return errors.New(code.ParamErrorMsg(language, code.VaultIndexParamErr))
-//	}
-//
-//	rsaBytes, err := os.ReadFile(rsaPrivKeyPath)
-//	if err != nil {
-//		return errors.New(code.GetMessage(language, code.FileNotFound, "RSA"))
-//	}
-//
-//	chainList := strings.Split(chains, ",")
-//	input := cmd.RecoveryInput{
-//		ZipPath:      zipPath,
-//		UserMnemonic: userMnemonic,
-//		EciesPrivKey: eciesPrivKey,
-//		RsaPrivKey:   string(rsaBytes),
-//		VaultCount:   vaultCountInt,
-//		Chains:       chainList,
-//	}
-//
-//	recoverResult, err := cmd.RecoverKeys(input)
-//	if err != nil {
-//		var errMsg string
-//		i18nErr, ok := err.(*code.I18nError)
-//		if ok {
-//			errMsg = code.GetMessage(language, i18nErr.Code)
-//		} else {
-//			errMsg = err.Error()
-//		}
-//		return errors.New(errMsg)
-//	}
-//
-//	resBytes, _ := json.Marshal(recoverResult)
-//	data := string(resBytes)
-//	fmt.Printf("data: %s", data)
-//	return nil
-//}
 
 func main() {
 }
